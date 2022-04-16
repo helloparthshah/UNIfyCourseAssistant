@@ -229,11 +229,41 @@ def addCourse():
     return Response(json.dumps(c),  mimetype='application/json')
 
 
+@app.route("/api/view", methods=['GET', 'POST'])
+def viewCourse():
+    user_id = request.get_json()['user_id']
+    cur = get_db().cursor()
+    cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        return Response(json.dumps({'error': 'No courses found'}),  mimetype='application/json')
+    courses = json.loads(student['courses'])
+    c_list = []
+    for c in courses:
+        cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
+        course = cur.fetchone()
+        c_list.append({
+            'crn': course['crn'],
+            'time': course['time'],
+            'name': course['name'],
+            'location': course['location'],
+            'section': course['section'],
+            'title': course['course'],
+            'ge': course['ge'],
+            'instructor': course['professor'],
+            'units': course['units'],
+            'discussion': course['discussion'],
+            'discussion_location': course['discussion_location']
+        })
+    return Response(json.dumps(c_list),  mimetype='application/json')
+
+
 school = ratemyprofessor.get_school_by_name("University of California Davis")
 
 
-@app.route("/professor/<professor>")
-def getRMP(professor):
+@app.route("/api/professor")
+def getRMP():
+    professor = request.get_json()['professor']
     prof = ratemyprofessor.get_professor_by_school_and_name(school, professor)
     if prof is not None:
         prof = {
