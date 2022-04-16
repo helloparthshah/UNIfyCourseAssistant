@@ -18,7 +18,7 @@ function AddClass() {
 
   let getClass = () => {
     axios
-      .post("/add", {
+      .post("/api/add", {
         course: courseName,
         section: section,
         // user_id: localStorage.getItem("user_id"),

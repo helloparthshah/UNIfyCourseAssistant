@@ -157,7 +157,7 @@ def home():
 # get course by course name
 
 
-@app.route("/course", methods=['GET', 'POST'])
+@app.route("/api/course", methods=['GET', 'POST'])
 def getCourse():
     # get course from body
     course = request.get_json()['course']
@@ -192,7 +192,7 @@ def getCourse():
 # add new class
 
 
-@app.route("/add", methods=['GET', 'POST'])
+@app.route("/api/add", methods=['GET', 'POST'])
 def addCourse():
     c = None
     course = request.get_json()['course']
