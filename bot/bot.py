@@ -52,7 +52,6 @@ async def _course(ctx=SlashContext, *, course=None, section=None):
             Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}", inline=False)
     await ctx.send(embed=embed)
 
-
 @slash.slash(name="professor", description="View information for a professor")
 async def _prof(ctx=SlashContext, *, prof=None):
     link = "http://127.0.0.1:5000/course/" + prof

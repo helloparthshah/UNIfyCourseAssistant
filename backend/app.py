@@ -4,6 +4,7 @@ import json
 from icalendar import Event, Calendar
 from flask import Flask
 import requests
+from flask import Flask, request, jsonify
 
 from datetime import datetime, timedelta
 from flask import Response
@@ -66,7 +67,7 @@ def getClassInfo(course):
     sections = []
     cur = get_db().cursor()
     cur.execute(
-        "SELECT * FROM courses WHERE course LIKE ?", (course.upper().replace(' ', ''),))
+        "SELECT * FROM courses WHERE course LIKE ? OR crn LIKE ?", (course.upper().replace(' ', ''), course.upper().replace(' ', '')))
     rows = cur.fetchall()
     if len(rows) > 0:
         for row in rows:
@@ -156,10 +157,13 @@ def home():
 # get course by course name
 
 
-@app.route("/course/<course>")
-def getCourse(course):
+@app.route("/course", methods=['GET', 'POST'])
+def getCourse():
+    # get course from body
+    course = request.get_json()['course']
     section = None
     sections = getClassInfo(course)
+    print(sections)
     courses = []
     for s in sections:
         cur = get_db().cursor()
@@ -184,6 +188,45 @@ def getCourse(course):
                     'discussion_location': row['discussion_location']
                 })
     return Response(json.dumps(courses),  mimetype='application/json')
+
+# add new class
+
+
+@app.route("/add", methods=['GET', 'POST'])
+def addCourse():
+    c = None
+    course = request.get_json()['course']
+    section = request.get_json()['section']
+    user_id = request.get_json()['user_id']
+    cur = get_db().cursor()
+    cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        cur.execute("INSERT INTO students VALUES (?, ?)",
+                    (user_id, json.dumps([])))
+        get_db().commit()
+        student = [user_id, json.dumps([])]
+    studentCourses = json.loads(student['courses'])
+    sections = getClassInfo(course)
+    if len(sections) == 0:
+        return Response(json.dumps({'error': 'No sections found'}),  mimetype='application/json')
+    c = None
+    for s in sections:
+        print(s)
+        if s['section'].lower() == section.lower():
+            if s['crn'] not in studentCourses:
+                c = s
+                # add crn to student's list of courses
+                studentCourses.append(s['crn'])
+                cur.execute(
+                    "UPDATE students SET courses=? WHERE user_id=?", (json.dumps(studentCourses), student[0]))
+                get_db().commit()
+                break
+            else:
+                return Response(json.dumps({'error': 'Course already added'}),  mimetype='application/json')
+    if c is None:
+        return Response(json.dumps({'error': 'No section found'}),  mimetype='application/json')
+    return Response(json.dumps(c),  mimetype='application/json')
 
 
 school = ratemyprofessor.get_school_by_name("University of California Davis")
