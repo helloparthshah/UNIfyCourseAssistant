@@ -33,7 +33,7 @@ async def _faq(ctx= SlashContext, *, link = None):
     await ctx.send(url)
 
 @slash.slash(name="course", description="View information for a course")
-async def _course(ctx = SlashContext, *, course = str, section: str = None):
+async def _course(ctx = SlashContext, *, course = None, section = None):
     link = "http://127.0.0.1:5000/course/" + course
     retjson = requests.get(url=link)
     retjson = retjson.json()
@@ -48,6 +48,17 @@ async def _course(ctx = SlashContext, *, course = str, section: str = None):
     embed.add_field(name=course, value=f'> Title: {retjson['name']}\n> Instructor: {retjson['instructor']}\n> \
             Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}', inline=False)
     await ctx.send(embed=embed)
+
+@slash.slash(name="professor", description="View information for a professor")
+async def _prof(ctx = SlashContext, *, prof = None):
+    link = "http://127.0.0.1:5000/course/" + prof
+    retjson = requests.get(url=link)
+    retjson = retjson.json()
+    print(retjson)
+    if len(retjson) == 0:
+        notfound = discord.Embed(title="Course not found", color=0x00ff00)
+        return await ctx.send(embed=notfound)
+
     
 
 
