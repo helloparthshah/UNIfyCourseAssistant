@@ -6,7 +6,7 @@ import AddClass from "./components/AddClass";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/login";
 import ViewClasses from "./components/ViewClasses";
-
+import Rating from "./components/rating";
 function App() {
   return (
     <BrowserRouter>
@@ -14,6 +14,7 @@ function App() {
         <Route path="/" element={<AddClass />} />
         <Route path="/login" element={<Login />} />
         <Route path="/view" element={<ViewClasses />} />
+        <Route path="/rate" element={<Rating />} />
       </Routes>
     </BrowserRouter>
   );
