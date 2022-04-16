@@ -5,16 +5,17 @@ import { ProgressBar, Form, FormControl, Button } from "react-bootstrap";
 function Rating() {
   const progress = 50;
   const courseName = "ECS150";
-  const professors;
-  
-  axios
-    .post("/api/course", {
-      course: courseName,
-    })
-    .then((res) => {
-        professors = res.data.instructor
-      console.log(professors);
-    });
+  useEffect(() => {
+    axios
+      .post("/api/course", {
+        course: courseName,
+      })
+      .then((res) => {
+        const professors = res.data.instructor;
+        console.log(res.data);
+      });
+  }, []);
+
   return (
     <div className="rate">
       <h3>Simple Progress Bar</h3>

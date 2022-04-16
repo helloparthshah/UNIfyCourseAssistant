@@ -5,21 +5,27 @@ import { Form, FormControl, Button } from "react-bootstrap";
 
 function ViewClasses() {
   const [courses, setData] = useState([]);
+  const [user_id, setUser_id] = useState("");
   useEffect(() => {
-    axios
-      .post("/api/view", {
-        // user_id: localStorage.getItem("user_id"),
-        user_id: "279174239972491276",
-      })
-      .then((res) => {
-        console.log(res.data);
-        // add courses to courses as divs
-        setData(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    setUser_id("279174239972491276");
+    // setUser_id(localStorage.getItem("user_id"));
   }, []);
+  useEffect(() => {
+    if (user_id && user_id !== "") {
+      console.log(user_id);
+      axios
+        .post("/api/view", {
+          user_id: user_id,
+        })
+        .then((res) => {
+          console.log(res.data);
+          if (!res.data.err) setData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [user_id]);
 
   return (
     <div className="view-class">

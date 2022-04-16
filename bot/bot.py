@@ -7,6 +7,7 @@ from discord_slash import SlashCommand, SlashContext
 from discord.ext import tasks
 from dotenv import load_dotenv
 import requests
+import json
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -37,8 +38,9 @@ async def _faq(ctx=SlashContext, *, link=None):
 
 @slash.slash(name="course", description="View information for a course")
 async def _course(ctx=SlashContext, *, course=None, section=None):
-    link = "http://127.0.0.1:5000/course/" + course
-    retjson = requests.get(url=link)
+    link = "http://127.0.0.1:5000/api/course"
+    retjson = requests.post(
+        url=link, json={"course": course})
     retjson = retjson.json()
     print(retjson)
     if len(retjson) == 0:
@@ -51,6 +53,7 @@ async def _course(ctx=SlashContext, *, course=None, section=None):
     embed.add_field(name=course, value=f"> Title: {retjson['name']}\n> Instructor: {retjson['instructor']}\n> \
             Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}", inline=False)
     await ctx.send(embed=embed)
+
 
 @slash.slash(name="professor", description="View information for a professor")
 async def _prof(ctx=SlashContext, *, prof=None):
