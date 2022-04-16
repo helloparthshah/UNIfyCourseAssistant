@@ -36,7 +36,7 @@ async def _faq(ctx= SlashContext, *, link = None):
 async def _course(ctx = SlashContext, *, course = str, section: str = None):
     link = "http://127.0.0.1:5000/course/" + course
     retjson = requests.get(url=link)
-    print(retjson.dump)
+    print(retjson.json())
     
 
 
