@@ -36,7 +36,18 @@ async def _faq(ctx= SlashContext, *, link = None):
 async def _course(ctx = SlashContext, *, course = str, section: str = None):
     link = "http://127.0.0.1:5000/course/" + course
     retjson = requests.get(url=link)
-    print(retjson.dump)
+    retjson = retjson.json()
+    print(retjson)
+    if len(retjson) == 0:
+        notfound = discord.Embed(title="Course not found", color=0x00ff00)
+        return await ctx.send(embed=notfound)
+    embed = discord.Embed(
+        title=course.upper(), description="", color=0x00ff00)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+    # for crns in sections get the class info
+    embed.add_field(name=course, value=f'> Title: {retjson['name']}\n> Instructor: {retjson['instructor']}\n> \
+            Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}', inline=False)
+    await ctx.send(embed=embed)
     
 
 
