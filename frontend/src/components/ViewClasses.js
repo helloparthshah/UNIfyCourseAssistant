@@ -5,17 +5,17 @@ import { useCookies } from "react-cookie";
 import { Table, Button } from "react-bootstrap";
 
 function ViewClasses(props) {
-  const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
+  // const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [courses, setData] = useState([]);
   const [user_id, setUser_id] = useState("");
   useEffect(() => {
     console.log(props.user_id);
     // setUser_id("279174239972491276");
     // get user_id from cookie
-    if (cookies.user_id) {
-      setUser_id(cookies.user_id);
+    if (props.user_id) {
+      setUser_id(props.user_id);
     }
-  }, [cookies]);
+  }, [props.user_id]);
   useEffect(() => {
     if (user_id && user_id !== "") {
       console.log(user_id);

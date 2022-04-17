@@ -2,35 +2,35 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/AddClass.css";
 import { ProgressBar, Form, FormControl, Button } from "react-bootstrap";
-function Rating() {
+function Rating(props) {
   const [rate, setRate] = useState(0);
   const [diff, setDiff] = useState(0);
   const [takeagain, setTake] = useState(0);
   const [numRateing, setNum] = useState(0);
 
   const [prof, setProf] = useState("");
-  const courseName = "ECS150";
+
   useEffect(() => {
-    axios
-      .post("/api/course", {
-        course: courseName,
-      })
-      .then((res) => {
-        const professors = res.data[0].instructor;
-        setProf(professors);
-        axios
-          .post("/api/professor", {
-            professor: professors,
-          })
-          .then((res) => {
-            setRate(res.data.rating * 20.0);
-            setDiff(res.data.difficulty * 20.0);
-            setTake(res.data.would_take_again);
-            setNum(res.data.num_ratings);
-            console.log(res.data.would_take_again);
-          });
-      });
-  }, [prof, rate, diff, takeagain, numRateing]);
+    setProf(props.prof);
+  }, [props.prof]);
+
+  useEffect(() => {
+    console.log(prof);
+    if (prof)
+      axios
+        .post("/api/professor", {
+          professor: prof,
+        })
+        .then((res) => {
+          console.log(res.data);
+          setProf(res.data.name);
+          setRate(res.data.rating * 20.0);
+          setDiff(res.data.difficulty * 20.0);
+          setTake(res.data.would_take_again);
+          setNum(res.data.num_ratings);
+          // console.log(res.data.would_take_again);
+        });
+  }, [prof]);
 
   return (
     <div className="rate">
