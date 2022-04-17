@@ -23,6 +23,7 @@ function AddClass(props) {
         // user_id: localStorage.getItem("user_id"),
         // user_id: "279174239972491276",
         user_id: props.user_id,
+        username: props.username,
       })
       .then((res) => {
         console.log(res.data);

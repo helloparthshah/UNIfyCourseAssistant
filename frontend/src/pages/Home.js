@@ -14,6 +14,7 @@ import Map from "../components/Map";
 function Home() {
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [user_id, setUser_id] = useState("");
+  const [username, setUsername] = useState("");
   const [professor, setProfessor] = useState("");
 
   useEffect(() => {
@@ -21,6 +22,9 @@ function Home() {
     // get user_id from cookie
     if (cookies.user_id) {
       setUser_id(cookies.user_id);
+    }
+    if (cookies.username) {
+      setUsername(cookies.username);
     }
   }, [cookies]);
   useEffect(() => {
@@ -64,8 +68,15 @@ function Home() {
                 if (data.id) {
                   // set cookie and set time to expire in 1 week
                   setCookie("user_id", data.id, { path: "/", maxAge: 604800 });
-                  window.location.href = "/";
+                  //   window.location.href = "/";
                 }
+                if (data.username) {
+                  setCookie("username", data.username, {
+                    path: "/",
+                    maxAge: 604800,
+                  });
+                }
+                window.location.href = "/";
               });
           });
       }
@@ -84,7 +95,7 @@ function Home() {
       <Map user_id={user_id} />
       <Recommend user_id={user_id} />
       <SearchClass onClick={test} />
-      <AddClass user_id={user_id} />
+      <AddClass user_id={user_id} username={username} />
       <ViewClasses user_id={user_id} onClick={test} />
       <Rating prof={professor} />
       <Calendar user_id={user_id} />

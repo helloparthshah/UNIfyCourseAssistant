@@ -3,30 +3,33 @@ import axios from "axios";
 import { useRef } from "react";
 
 function Map(props) {
-  let getLocation = async (query) => {
-    //   returns the coordinates of the place
-    let res = await axios.post("/api/location", {
-        query,
-      }),
-      location = res.data;
-    return location;
-  };
-  /* let coordinates = {};
-    axios
-      .post("/api/location", {
-        query: query,
-      })
-      .then((res) => {
-        console.log(res.data);
-        coordinates = res.data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    return coordinates;
-  }; */
+  const [user_id, setUser_id] = useState("");
+  const [courses, setData] = useState([]);
   const googleMapRef = useRef();
   let googleMap;
+
+  useEffect(() => {
+    setUser_id(props.user_id);
+    console.log(props.user_id);
+  }, [props.user_id]);
+
+  useEffect(() => {
+    if (user_id && user_id !== "") {
+      console.log(user_id);
+      axios
+        .post("/api/view", {
+          user_id: user_id,
+        })
+        .then((res) => {
+          console.log(res.data);
+          if (!res.data.err) setData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [user_id]);
+
   useEffect(() => {
     const googleMapScript = document.createElement("script");
     googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_MAPS_API_KEY}&libraries=places`;
@@ -36,7 +39,7 @@ function Map(props) {
       //   getLatLng();
       loadMarkers();
     });
-  }, []);
+  }, [user_id, courses]);
 
   let loadMarkers = async () => {
     googleMap = new window.google.maps.Map(googleMapRef.current, {
@@ -47,53 +50,16 @@ function Map(props) {
       },
       disableDefaultUI: true,
     });
-    axios
-      .post("/api/view", {
-        user_id: props.user_id,
-      })
-      .then((res) => {
-        console.log(res.data);
-        res.data.forEach((course) => {
-          console.log(course);
-          if (course.location) {
-            getLocation(course.location).then((coordinates) => {
-              console.log(res);
-              new window.google.maps.Marker({
-                position: coordinates,
-                map: googleMap,
-                title: course.location,
-              });
-            });
-          }
-        });
-        /* for (let c in res.data) {
-          console.log(res.data[c]);
-          if (res.data[c].location) {
-            getLocation(res.data[c].location).then((coordinates) => {
-              console.log(res);
-              new window.google.maps.Marker({
-                position: coordinates,
-                map: googleMap,
-                title: res.data[c].location,
-              });
-            });
-          }
-        } */
-      });
-    /* await getLocation("YOUNG 198");
-    console.log("Coordinates", coordinates);
-    let lat = coordinates.lat;
-    let lng = coordinates.lng;
-    try {
+    courses.forEach((course) => {
+      console.log("Course:", course);
+      let coordinates = JSON.parse(course.coordinates);
       new window.google.maps.Marker({
-        position: { lat, lng },
+        position: coordinates,
         map: googleMap,
-        title: "YOUNG 198",
+        title: course.location,
         animation: window.google.maps.Animation.DROP,
       });
-    } catch (err) {
-      console.log(err);
-    } */
+    });
   };
 
   return (

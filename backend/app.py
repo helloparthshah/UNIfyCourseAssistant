@@ -34,10 +34,10 @@ def get_db():
         # create the courses table if it doesn't exist
         # crn, time, name, location, section, title, ge, instructor, units, discussion
         cur.execute(
-            'CREATE TABLE IF NOT EXISTS courses (crn TEXT, time TEXT, course TEXT, location TEXT, section TEXT, seats NUMBER, name TEXT, ge TEXT, professor TEXT, units TEXT, discussion TEXT, discussion_location TEXT)')
+            'CREATE TABLE IF NOT EXISTS courses (crn TEXT, time TEXT, course TEXT, location TEXT, section TEXT, seats NUMBER, name TEXT, ge TEXT, professor TEXT, units TEXT, discussion TEXT, discussion_location TEXT,coordinates TEXT)')
         # create the students table if it doesn't exist
         cur.execute(
-            'CREATE TABLE IF NOT EXISTS students (user_id TEXT, courses TEXT)')
+            'CREATE TABLE IF NOT EXISTS students (user_id TEXT,name TEXT, courses TEXT)')
         db.commit()
     db.row_factory = sqlite3.Row
     return db
@@ -91,7 +91,8 @@ def getClassInfo(course):
                 'professor': row['professor'],
                 'units': row['units'],
                 'discussion': row['discussion'],
-                'discussion_location': row['discussion_location']
+                'discussion_location': row['discussion_location'],
+                'coordinates': row['coordinates']
             }
             sections.append(row)
         return sections
@@ -116,6 +117,7 @@ def getClassInfo(course):
                 row.append(line.replace('•\xa0', '').strip())
         # convert row to json
         # "40573", "11:00 - 11:50 AM, F", "ECS 150", "HUNT 100", "A01", "0", "Operating Systems", "SE", "SE", "Bishop, M", "4.0",
+        coordinates = getCoordinates(row[3])
         row = {
             'crn': row[0],
             'time': row[1],
@@ -128,7 +130,8 @@ def getClassInfo(course):
             'professor': row[9],
             'units': row[10],
             'discussion': '',
-            'discussion_location': ''
+            'discussion_location': '',
+            'coordinates': coordinates
         }
 
         # check if crn is in the database
@@ -147,20 +150,15 @@ def getClassInfo(course):
             else:
                 # update the record to row
                 cur.execute(
-                    'UPDATE courses SET crn = ?, time = ?, course = ?, location = ?, section = ?,seats = ?, name = ?, ge = ?, professor = ?, units = ?, discussion = ?,discussion_location=? WHERE crn = ?',
-                    (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], rows[0]['time'], rows[0]['location'], row['crn']))
+                    'UPDATE courses SET crn = ?, time = ?, course = ?, location = ?, section = ?,seats = ?, name = ?, ge = ?, professor = ?, units = ?, discussion = ?,discussion_location=?,coordinates=? WHERE crn = ?',
+                    (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], rows[0]['time'], rows[0]['location'], row['coordinates'], row['crn']))
         else:
             sections.append(row)
             # add course to database
             cur.execute(
-                'INSERT INTO courses VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)', (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], row['discussion'], row['discussion_location']))
+                'INSERT INTO courses VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)', (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], row['discussion'], row['discussion_location'], row['coordinates']))
     get_db().commit()
     return sections
-
-
-@app.route("/")
-def home():
-    return "Hello, World!"
 
 # get course by course name
 
@@ -193,7 +191,8 @@ def getCourse():
                     'instructor': row['professor'],
                     'units': row['units'],
                     'discussion': row['discussion'],
-                    'discussion_location': row['discussion_location']
+                    'discussion_location': row['discussion_location'],
+                    'coordinates': row['coordinates'],
                 })
     return Response(json.dumps(courses),  mimetype='application/json')
 
@@ -206,12 +205,13 @@ def addCourse():
     course = request.get_json()['course']
     section = request.get_json()['section']
     user_id = request.get_json()['user_id']
+    username = request.get_json()['username']
     cur = get_db().cursor()
     cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
     student = cur.fetchone()
     if student is None:
-        cur.execute("INSERT INTO students VALUES (?, ?)",
-                    (user_id, json.dumps([])))
+        cur.execute("INSERT INTO students VALUES (?, ?, ?)",
+                    (user_id, username, json.dumps([])))
         get_db().commit()
         cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
         student = cur.fetchone()
@@ -229,7 +229,7 @@ def addCourse():
                 # add crn to student's list of courses
                 studentCourses.append(s['crn'])
                 cur.execute(
-                    "UPDATE students SET courses=? WHERE user_id=?", (json.dumps(studentCourses), student[0]))
+                    "UPDATE students SET courses=? WHERE user_id=?", (json.dumps(studentCourses), student['user_id']))
                 get_db().commit()
                 break
             else:
@@ -246,7 +246,7 @@ def viewCourse():
     cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
     student = cur.fetchone()
     if student is None:
-        return Response(json.dumps({'error': 'No courses found'}),  mimetype='application/json')
+        return Response(json.dumps({'error': 'Please add a class first'}),  mimetype='application/json')
     courses = json.loads(student['courses'])
     c_list = []
     for c in courses:
@@ -263,7 +263,8 @@ def viewCourse():
             'instructor': course['professor'],
             'units': course['units'],
             'discussion': course['discussion'],
-            'discussion_location': course['discussion_location']
+            'discussion_location': course['discussion_location'],
+            'coordinates': course['coordinates'],
         })
     return Response(json.dumps(c_list),  mimetype='application/json')
 
@@ -399,7 +400,26 @@ def createTestUsers():
     return Response(json.dumps({'success': 'Test users created'}),  mimetype='application/json')
 
 
-@app.route("/api/location", methods=['GET', 'POST'])
+def getCoordinates(query):
+    try:
+        url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+        params = {
+            "query": query,
+            "location": "38.53828240712879, -121.76172941812959",
+            "radius": "5000",
+            "region": "US",
+            "key": API_KEY,
+        }
+        response = requests.get(url, params=params)
+        data = response.json()
+        # parse location data
+        location = data['results'][0]['geometry']['location']
+        return json.dumps(location)
+    except:
+        return json.dumps({'lat': 38.53828240712879, 'lng': -121.76172941812959})
+
+
+''' @app.route("/api/location", methods=['GET', 'POST'])
 def getLocation():
     query = request.get_json()['query']
     url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
@@ -414,7 +434,7 @@ def getLocation():
     data = response.json()
     # parse location data
     location = data['results'][0]['geometry']['location']
-    return Response(json.dumps(location),  mimetype='application/json')
+    return Response(json.dumps(location),  mimetype='application/json') '''
 
 
 school = ratemyprofessor.get_school_by_name("University of California Davis")
