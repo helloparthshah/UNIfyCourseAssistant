@@ -13,13 +13,14 @@ from dotenv import load_dotenv
 from itsdangerous import exc
 import requests
 import json
+from datetime import datetime, timedelta
 load_dotenv()
 
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 slash = SlashCommand(client, sync_commands=True)
-
+global members
 
 @client.event
 async def on_ready():
@@ -29,7 +30,6 @@ async def on_ready():
             f'{client.user} is connected to the following guild:\n'
             f'{guild.name}\n'
         )
-    global members
     members = guild.members
 
 
@@ -133,6 +133,39 @@ async def _add_course(ctx=SlashContext):
         print(e)
         notfound = discord.Embed(title="Error", color=0x00ff00)
         return await ctx.send(embed=notfound)
+
+def getLectureTimes(time):
+    # Convert 10:00 - 10:50 AM, MWF to datetime objects
+    t = time.split(',')[0]
+    start, end = t.split('-')
+    start = start.strip()+' '+end.strip().split(' ')[1]
+    end = end.strip()
+    return [start, end, time.split(',')[1].strip()]
+
+@tasks.loop(minutes=30)
+async def reminder():
+    link = "http://127.0.0.1:5000/api/view"
+    for member in members:
+        retjson = requests.post(url=link, json={"user_id": members.id})
+        retjson = retjson.json()
+        for c in retjson:
+            tm = datetime.strptime(c['time'],"%I:%M %p %w")
+            today = datetime.now()
+            monday = today - timedelta(days=today.weekday())
+            result = (monday + timedelta(days=int(c['time'][-1])))
+            if result.isoweekday() != datetime.now().isoweekday():
+                continue
+            t = datetime.now().replace(hour=tm.hour, minute=tm.minute, second=0, microsecond=0)
+            if abs(t-datetime.now()) <= timedelta(minutes=30):
+                user = member
+                embed = discord.Embed(title="Reminder", color=0x00ff00)
+                embed.set_author(name=user.name, icon_url=user.avatar_url)
+                embed.add_field(
+                    name="You have a class right now", value=c['time'], inline=False)
+            await user.send(embed=embed)
+
+reminder.start()
+
 
 
 client.run(os.environ['TOKEN'])
