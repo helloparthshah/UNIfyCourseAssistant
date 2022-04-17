@@ -261,7 +261,7 @@ def viewCourse():
 school = ratemyprofessor.get_school_by_name("University of California Davis")
 
 
-@app.route("/api/professor")
+@app.route("/api/professor", methods=['GET', 'POST'])
 def getRMP():
     professor = request.get_json()['professor']
     prof = ratemyprofessor.get_professor_by_school_and_name(school, professor)
