@@ -1,4 +1,5 @@
 from audioop import lin2adpcm
+import io
 from locale import currency
 from traceback import print_tb
 from unicodedata import name
@@ -14,6 +15,7 @@ from itsdangerous import exc
 import requests
 import json
 from datetime import datetime, timedelta
+from icalendar import Event, Calendar
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -135,19 +137,25 @@ async def _add_course(ctx=SlashContext):
         notfound = discord.Embed(title="Error", color=0x00ff00)
         return await ctx.send(embed=notfound)
 
+
 @slash.slash(name="calendar", description="Sends your calendar")
-async def _cal(ctx = SlashContext):
+async def _cal(ctx=SlashContext):
     try:
         link = "http://127.0.0.1:5000/api/calendar"
         retjson = requests.post(url=link, json={"user_id": ctx.author.id})
-        await ctx.send(file=discord.File(retjson))
-    except:
+        print("Test")
+        # it is ical object
+        ical = Calendar.from_ical(retjson.text)
+
+        print(ical)
+        await ctx.send(file=discord.File(
+            io.BytesIO(retjson.content), filename="calendar.ics"))
+        # await ctx.send(file=discord.File(retjson))
+        # await ctx.send(file=discord.File(retjson, filename="calendar.ics"))
+    except Exception as e:
+        print(e)
         notfound = discord.Embed(title="Error", color=0x00ff00)
         return await ctx.send(embed=notfound)
-
-
-
-
 
 
 def getLectureTimes(time):
