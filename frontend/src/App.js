@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/login";
 import ViewClasses from "./components/ViewClasses";
 import Home from "./pages/Home";
+import Rating from "./components/rating";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/view" element={<ViewClasses />} />
+        <Route path="/rate" element={<Rating />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/ViewClasses.css";
-import { Form, FormControl, Button } from "react-bootstrap";
+import { useCookies } from "react-cookie";
 
-function ViewClasses() {
+function ViewClasses(props) {
+  const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [courses, setData] = useState([]);
   const [user_id, setUser_id] = useState("");
   useEffect(() => {
-    setUser_id("279174239972491276");
-    // setUser_id(localStorage.getItem("user_id"));
-  }, []);
+    console.log(props.user_id);
+    // setUser_id("279174239972491276");
+    // get user_id from cookie
+    if (cookies.user_id) {
+      setUser_id(cookies.user_id);
+    }
+  }, [cookies]);
   useEffect(() => {
     if (user_id && user_id !== "") {
       console.log(user_id);
@@ -29,14 +34,18 @@ function ViewClasses() {
 
   return (
     <div className="view-class">
-      {courses.map((course) => {
-        return (
-          <div key={course.crn} className="course-div">
-            <div className="course-name">{course.title}</div>
-            <div className="course-section">{course.section}</div>
-          </div>
-        );
-      })}
+      {courses.length > 0 ? (
+        courses.map((course) => {
+          return (
+            <div key={course.crn} className="course-div">
+              <div className="course-name">{course.title}</div>
+              <div className="course-section">{course.section}</div>
+            </div>
+          );
+        })
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
