@@ -66,11 +66,14 @@ async def _course(ctx=SlashContext, *, course=None, section=""):
         embed = discord.Embed(
             title=course.upper(), description="", color=0x00ff00)
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        # for crns in sections get the class info
-        embed.add_field(name=course, value=f"> Title: {retjson[0]['name']}\n> Instructor: {retjson[0]['instructor']}\n> \
-                Units: {retjson[0]['units']}\n> Location: {retjson[0]['location']}\n> Time: {retjson[0]['time']}\n> Discussion: {retjson[0]['discussion']}\n> Discussion Location: {retjson[0]['discussion_location']}", inline=False)
+        # add all the sections
+        for s in retjson:
+            print(s)
+            embed.add_field(name=course, value=f"> Title: {s['name']}\n> Instructor: {s['instructor']}\n> \
+                Units: {s['units']}\n> Location: {s['location']}\n> Time: {s['time']}\n> Discussion: {s['discussion']}\n> Discussion Location: {s['discussion_location']}", inline=False)
         await ctx.send(embed=embed)
-    except:
+    except Exception as e:
+        print(e)
         notfound = discord.Embed(title="Course not found", color=0x00ff00)
         return await ctx.send(embed=notfound)
 
