@@ -65,7 +65,7 @@ async def _prof(ctx=SlashContext, *, prof=None):
             title="Professor", description="", color=0x00ff00)
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.add_field(name=prof, value=f"> Name: {retjson['name']}\n> Department: {retjson['department']}\n> \
-                Difficulty: {retjson['difficulty']}\n> Rating: {retjson['rating']}\n> Would Take Again: {retjson['would_take_again']}\n> Number: {retjson['num_ratings']}", inline=False)
+                Difficulty: {retjson['difficulty']}\n> Rating: {retjson['rating']}\n> Would Take Again: {retjson['would_take_again']}\n> Number of Ratings: {retjson['num_ratings']}", inline=False)
         await ctx.send(embed=embed)
 
     except:
