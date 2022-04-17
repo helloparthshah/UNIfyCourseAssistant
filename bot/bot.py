@@ -1,4 +1,5 @@
 from audioop import lin2adpcm
+from locale import currency
 from traceback import print_tb
 from unicodedata import name
 from aiohttp import request
@@ -49,6 +50,8 @@ async def _think(ctx=SlashContext):
     await ctx.send(file=discord.File(random.choice(os.listdir(os.getcwd()))))
 
 
+#section not wokring properly
+
 @slash.slash(name="course", description="View information for a course")
 async def _course(ctx=SlashContext, *, course=None, section=""):
     link = "http://127.0.0.1:5000/api/course"
@@ -96,7 +99,7 @@ async def _add_course(ctx=SlashContext, *, course=None, section=None):
         retjson = retjson.json()
         if(retjson['error'] != None):
             courseadded = discord.Embed(
-                title="Course already added", color=0x00ff00)
+            title="Course already added", color=0x00ff00)
             return await ctx.send(embed=courseadded)
         embed = discord.Embed(
             title=course.upper(), description="", color=0x00ff00)
@@ -105,7 +108,6 @@ async def _add_course(ctx=SlashContext, *, course=None, section=None):
         embed.add_field(name=course, value=f"> Title: {retjson['name']}\n> Instructor: {retjson['instructor']}\n> \
                 Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}\n> Discussion Location: {retjson['discussion_location']}", inline=False)
         await ctx.send(embed=embed)
-
     except:
         notfound = discord.Embed(title="Course not found", color=0x00ff00)
         return await ctx.send(embed=notfound)
@@ -117,17 +119,14 @@ async def _add_course(ctx=SlashContext):
         link = "http://127.0.0.1:5000/api/view"
         retjson = requests.post(url=link, json={"user_id": ctx.author.id})
         retjson = retjson.json()
-        print(retjson)
-        print(retjson[1])
         embed = discord.Embed(
             title="Courses", description="", color=0x00ff00)
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         for i in range(0, len(retjson)):
-            print(retjson[i])
             # for crns in sections get the class info
-            embed.add_field(value=f"> Title: {retjson['name']}\n> Instructor: {retjson['instructor']}\n> \
-                    Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}\n> Discussion Location: {retjson['discussion_location']}", inline=False)
-            await ctx.send(embed=embed)
+            embed.add_field(value=f"> Title: {retjson[i]['name']}\n> Instructor: {retjson[i]['instructor']}\n> \
+                    Units: {retjson[i]['units']}\n> Location: {retjson[i]['location']}\n> Time: {retjson[i]['time']}\n> Discussion: {retjson[i]['discussion']}\n> Discussion Location: {retjson[i]['discussion_location']}", inline=False)
+        await ctx.send(embed=embed)
     except:
         notfound = discord.Embed(title="Error", color=0x00ff00)
         return await ctx.send(embed=notfound)
