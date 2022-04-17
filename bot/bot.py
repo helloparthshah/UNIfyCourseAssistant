@@ -20,7 +20,7 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 slash = SlashCommand(client, sync_commands=True)
-global members
+members = []
 
 @client.event
 async def on_ready():
