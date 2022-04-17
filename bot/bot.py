@@ -57,6 +57,7 @@ async def _think(ctx=SlashContext):
 
 @slash.slash(name="course", description="View information for a course")
 async def _course(ctx=SlashContext, *, course=None, section=""):
+    await ctx.send(embed=discord.Embed(title="Fetching course", description="", color=0x00ff00))
     link = "http://127.0.0.1:5000/api/course"
     try:
         retjson = requests.post(
@@ -76,6 +77,7 @@ async def _course(ctx=SlashContext, *, course=None, section=""):
 
 @slash.slash(name="professor", description="View information for a professor")
 async def _prof(ctx=SlashContext, *, prof=None):
+    await ctx.send(embed=discord.Embed(title="Fetching details from RMP", description="", color=0x00ff00))
     try:
         link = "http://127.0.0.1:5000/api/professor"
         retjson = requests.post(url=link, json={"professor": prof})
@@ -95,6 +97,7 @@ async def _prof(ctx=SlashContext, *, prof=None):
 
 @slash.slash(name="add_course", description="Add a course")
 async def _add_course(ctx=SlashContext, *, course, section):
+    await ctx.send(embed=discord.Embed(title="Adding course", description="", color=0x00ff00))
     try:
         link = "http://127.0.0.1:5000/api/add"
         retjson = requests.post(
@@ -120,6 +123,7 @@ async def _add_course(ctx=SlashContext, *, course, section):
 
 @slash.slash(name="view_courses", description="View your courses")
 async def _add_course(ctx=SlashContext):
+    await ctx.send(embed=discord.Embed(title="Viewing course", description="", color=0x00ff00))
     try:
         link = "http://127.0.0.1:5000/api/view"
         retjson = requests.post(url=link, json={"user_id": ctx.author.id})
@@ -140,6 +144,7 @@ async def _add_course(ctx=SlashContext):
 
 @slash.slash(name="calendar", description="Sends your calendar")
 async def _cal(ctx=SlashContext):
+    await ctx.send(embed=discord.Embed(title="Creating Calendar", description="", color=0x00ff00))
     try:
         link = "http://127.0.0.1:5000/api/calendar"
         retjson = requests.post(url=link, json={"user_id": ctx.author.id})
