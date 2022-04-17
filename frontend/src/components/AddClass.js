@@ -3,8 +3,7 @@ import axios from "axios";
 import "../styles/AddClass.css";
 import { Form, FormControl, Button } from "react-bootstrap";
 
-function AddClass() {
-  const [courses, setData] = useState({});
+function AddClass(props) {
   const [courseName, setCourseName] = useState("");
   const [section, setSection] = useState("");
 
@@ -22,7 +21,8 @@ function AddClass() {
         course: courseName,
         section: section,
         // user_id: localStorage.getItem("user_id"),
-        user_id: "279174239972491276",
+        // user_id: "279174239972491276",
+        user_id: props.user_id,
       })
       .then((res) => {
         console.log(res.data);
