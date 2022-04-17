@@ -14,14 +14,13 @@ function Rating() {
       .then((res) => {
         const professors = res.data[0].instructor;
         setProf(professors);
-        console.log(prof);
-      });
-    axios
-      .post("/api/professor", {
-        professor: prof,
-      })
-      .then((res) => {
-        console.log(res.data);
+        axios
+          .post("/api/professor", {
+            professor: professors,
+          })
+          .then((res) => {
+            console.log(res.data);
+          });
       });
   }, [prof, progress]);
 
