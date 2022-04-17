@@ -54,12 +54,13 @@ async def _course(ctx=SlashContext, *, course=None, section=None):
         notfound = discord.Embed(title="Course not found", color=0x00ff00)
         return await ctx.send(embed=notfound)
 
+
 @slash.slash(name="professor", description="View information for a professor")
 async def _prof(ctx=SlashContext, *, prof=None):
-    link = "http://127.0.0.1:5000/api/professor/"
+    link = "http://127.0.0.1:5000/api/professor"
     retjson = requests.post(url=link, json={"professor": prof})
     #retjson = retjson.json()
-    print(retjson)
+    print(retjson.json())
     # if len(retjson) == 0:
     #     notfound = discord.Embed(title="Course not found", color=0x00ff00)
     #     return await ctx.send(embed=notfound)
