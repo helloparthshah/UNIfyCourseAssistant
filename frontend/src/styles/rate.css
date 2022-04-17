@@ -1,0 +1,12 @@
+.rate{
+    display: flex;
+    flex-direction: column;
+    width: 40vh;
+}
+.Category {
+    margin-left: 4vh;
+}
+.rateBar{
+    margin-left: 4vh;
+    margin-bottom: 1vh;
+}

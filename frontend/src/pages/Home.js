@@ -3,6 +3,7 @@ import axios from "axios";
 import AddClass from "../components/AddClass";
 import ViewClasses from "../components/ViewClasses";
 import Login from "../components/login";
+import "../styles/rate.css";
 import { useCookies } from "react-cookie";
 function Home() {
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
