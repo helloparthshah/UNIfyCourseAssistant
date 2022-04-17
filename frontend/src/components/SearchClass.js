@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../styles/ViewClasses.css";
 import { useCookies } from "react-cookie";
-import { Table, Button } from "react-bootstrap";
-
-function SearchClass() {
+import { Table, Button, Form } from "react-bootstrap";
+import "../styles/SearchClass.css";
+function SearchClass(props) {
   const [courses, setData] = useState([]);
   const [courseName, setCourseName] = useState("");
 
@@ -16,6 +15,7 @@ function SearchClass() {
     axios
       .post("/api/course", {
         course: courseName,
+        section: "",
       })
       .then((res) => {
         console.log(res.data);
@@ -27,7 +27,7 @@ function SearchClass() {
   };
   return (
     <div>
-      <div className="add-class">
+      <div className="search-class">
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Class Name</Form.Label>
@@ -45,22 +45,24 @@ function SearchClass() {
             Submit
           </Button>
         </Form>
-      </div>
-      <div className="view-class">
-        <Table striped bordered hover>
+        <Table striped bordered hover onClick={props.onClick}>
           {/* crn, time, name, location, section, title, ge, instructor, units, discussion */}
-          <thead>
-            <tr>
-              <th>CRN</th>
-              <th>Title</th>
-              <th>Section</th>
-              <th>Professor</th>
-              <th>Units</th>
-              <th>Time</th>
-              <th>Location</th>
-              <th>Discussion</th>
-            </tr>
-          </thead>
+          {courses.length > 0 ? (
+            <thead>
+              <tr>
+                <th>CRN</th>
+                <th>Title</th>
+                <th>Section</th>
+                <th>Professor</th>
+                <th>Units</th>
+                <th>Time</th>
+                <th>Location</th>
+                <th>Discussion</th>
+              </tr>
+            </thead>
+          ) : (
+            <> </>
+          )}
           <tbody>
             {courses.length > 0 ? (
               courses.map((course) => {

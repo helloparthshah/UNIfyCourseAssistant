@@ -205,7 +205,8 @@ def addCourse():
         cur.execute("INSERT INTO students VALUES (?, ?)",
                     (user_id, json.dumps([])))
         get_db().commit()
-        student = [user_id, json.dumps([])]
+        student = cur.fetchone()
+        # student = [user_id, json.dumps([])]
     studentCourses = json.loads(student['courses'])
     sections = getClassInfo(course)
     if len(sections) == 0:

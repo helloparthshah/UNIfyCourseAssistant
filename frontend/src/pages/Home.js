@@ -8,9 +8,12 @@ import { useCookies } from "react-cookie";
 import Header from "../components/Header";
 import Rating from "../components/rating";
 import Calendar from "../components/Calendar";
+import SearchClass from "../components/SearchClass";
 function Home() {
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [user_id, setUser_id] = useState("");
+  const [professor, setProfessor] = useState("");
+
   useEffect(() => {
     // setUser_id("279174239972491276");
     // get user_id from cookie
@@ -66,12 +69,20 @@ function Home() {
       }
     }
   }, [user_id, setCookie]);
+
+  let test = (e) => {
+    let row = e.target.parentNode;
+    // get professor name from tr
+    let prof = row.children[3].innerText;
+    setProfessor(prof);
+  };
   return (
     <>
       <Header />
+      <SearchClass onClick={test} />
       <AddClass user_id={user_id} />
-      <ViewClasses user_id={user_id} />
-      <Rating prof={"Devanbu"} />
+      <ViewClasses user_id={user_id} onClick={test} />
+      <Rating prof={professor} />
       <Calendar user_id={user_id} />
     </>
   );

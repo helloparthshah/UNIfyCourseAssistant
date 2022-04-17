@@ -8,6 +8,7 @@ function ViewClasses(props) {
   // const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [courses, setData] = useState([]);
   const [user_id, setUser_id] = useState("");
+
   useEffect(() => {
     console.log(props.user_id);
     // setUser_id("279174239972491276");
@@ -35,7 +36,7 @@ function ViewClasses(props) {
 
   return (
     <div className="view-class">
-      <Table striped bordered hover>
+      <Table striped bordered hover onClick={props.onClick}>
         {/* crn, time, name, location, section, title, ge, instructor, units, discussion */}
         <thead>
           <tr>
