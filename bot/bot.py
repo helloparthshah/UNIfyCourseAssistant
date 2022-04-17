@@ -31,12 +31,16 @@ async def on_ready():
 
 
 @slash.slash(name="faq", description="Answers a question")
-async def _faq(ctx=SlashContext, *, link=None):
-    url = link
+async def _faq(ctx=SlashContext, *, question=None):
+    url = question
     url = url.replace(' ', '-')
     url = "https://gatosecksual.kunpai.space/" + url
     await ctx.send(url)
 
+@slash.slash(name="think", description="Think")
+async def _think(ctx=SlashContext):
+    os.chdir("./think")
+    await ctx.send(file=discord.File(random.choice(os.listdir(os.getcwd()))))
 
 @slash.slash(name="course", description="View information for a course")
 async def _course(ctx=SlashContext, *, course=None, section=None):
