@@ -11,6 +11,7 @@ import Calendar from "../components/Calendar";
 import SearchClass from "../components/SearchClass";
 import Recommend from "../components/Recommend";
 import Map from "../components/Map";
+import "../styles/Home.css";
 function Home() {
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [user_id, setUser_id] = useState("");
@@ -65,6 +66,7 @@ function Home() {
               .then((response) => response.json())
               .then((data) => {
                 console.log(data);
+                console.log(data.username);
                 if (data.id) {
                   // set cookie and set time to expire in 1 week
                   setCookie("user_id", data.id, { path: "/", maxAge: 604800 });
@@ -92,13 +94,21 @@ function Home() {
   return (
     <>
       <Header />
-      <Map user_id={user_id} />
-      <Recommend user_id={user_id} />
-      <SearchClass onClick={test} />
-      <AddClass user_id={user_id} username={username} />
-      <ViewClasses user_id={user_id} onClick={test} />
-      <Rating prof={professor} />
-      <Calendar user_id={user_id} />
+      <div className="container">
+        <div className="row-add">
+          <SearchClass onClick={test} />
+          <Rating prof={professor} />
+        </div>
+        <div className="row-add">
+          <AddClass user_id={user_id} username={username} />
+          <ViewClasses user_id={user_id} onClick={test} />
+        </div>
+        <div className="row-add">
+          <Recommend user_id={user_id} />
+          <Map user_id={user_id} />
+        </div>
+        <Calendar user_id={user_id} />
+      </div>
     </>
   );
 }

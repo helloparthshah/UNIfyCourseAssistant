@@ -4,6 +4,7 @@ import "../styles/Header.css";
 function Header() {
   return (
     <div className="header">
+      <h1>UCDavis Course Helper</h1>
       <Login />
     </div>
   );

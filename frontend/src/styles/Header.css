@@ -4,5 +4,9 @@
     align-items: center;
     justify-content: space-around;
     width: 100%;
-    background: #f2f2f2;
+    height: 10vh;
+    /* background: #f2f2f2; */
+    /* darker background */
+    background: #2f2f2f;
+    color: #fff;
 }

@@ -27,7 +27,7 @@ function Calendar(props) {
     URL.revokeObjectURL(url);
   };
   return (
-    <div>
+    <div className="calendar">
       <h1>Calendar</h1>
       <Button onClick={downloadCalendar}>Download</Button>
     </div>

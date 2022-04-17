@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../styles/AddClass.css";
+import "../styles/rate.css";
 import { ProgressBar, Form, FormControl, Button } from "react-bootstrap";
 function Rating(props) {
   const [rate, setRate] = useState(0);

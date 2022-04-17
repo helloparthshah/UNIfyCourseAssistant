@@ -26,65 +26,63 @@ function SearchClass(props) {
       });
   };
   return (
-    <div>
-      <div className="search-class">
-        <Form>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Class Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter Class"
-              value={courseName}
-              onChange={onChangeCourseName}
-            />
-            <Form.Text className="text-muted">
-              Enter class in the form of ECS150 or crn
-            </Form.Text>
-          </Form.Group>
-          <Button variant="primary" onClick={viewCourse}>
-            Submit
-          </Button>
-        </Form>
-        <Table striped bordered hover onClick={props.onClick}>
-          {/* crn, time, name, location, section, title, ge, instructor, units, discussion */}
+    <div className="search-class">
+      <Form>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Class Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Class"
+            value={courseName}
+            onChange={onChangeCourseName}
+          />
+          <Form.Text className="text-muted">
+            Enter class in the form of ECS150 or crn
+          </Form.Text>
+        </Form.Group>
+        <Button variant="primary" onClick={viewCourse}>
+          Submit
+        </Button>
+      </Form>
+      <Table striped bordered hover onClick={props.onClick}>
+        {/* crn, time, name, location, section, title, ge, instructor, units, discussion */}
+        {courses.length > 0 ? (
+          <thead>
+            <tr>
+              <th>CRN</th>
+              <th>Title</th>
+              <th>Section</th>
+              <th>Professor</th>
+              <th>Units</th>
+              <th>Time</th>
+              <th>Location</th>
+              <th>Discussion</th>
+            </tr>
+          </thead>
+        ) : (
+          <> </>
+        )}
+        <tbody>
           {courses.length > 0 ? (
-            <thead>
-              <tr>
-                <th>CRN</th>
-                <th>Title</th>
-                <th>Section</th>
-                <th>Professor</th>
-                <th>Units</th>
-                <th>Time</th>
-                <th>Location</th>
-                <th>Discussion</th>
-              </tr>
-            </thead>
+            courses.map((course) => {
+              return (
+                <tr>
+                  <td>{course.crn}</td>
+                  <td>{course.title}</td>
+                  <td>{course.section}</td>
+                  <td>{course.instructor}</td>
+                  <td>{course.units}</td>
+                  <td>{course.time}</td>
+                  <td>{course.location}</td>
+                  <td>{course.discussion}</td>
+                </tr>
+              );
+            })
           ) : (
-            <> </>
+            <></>
           )}
-          <tbody>
-            {courses.length > 0 ? (
-              courses.map((course) => {
-                return (
-                  <tr>
-                    <td>{course.crn}</td>
-                    <td>{course.title}</td>
-                    <td>{course.section}</td>
-                    <td>{course.instructor}</td>
-                    <td>{course.units}</td>
-                    <td>{course.time}</td>
-                    <td>{course.location}</td>
-                    <td>{course.discussion}</td>
-                  </tr>
-                );
-              })
-            ) : (
-              <></>
-            )}
-          </tbody>
-        </Table>
-      </div>
+        </tbody>
+      </Table>
     </div>
   );
 }

@@ -1,3 +1,10 @@
+*,
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .App {
   text-align: center;
 }
@@ -32,7 +39,38 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+table {
+  display: block;
+  /* height: 500px; */
+  max-height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+table tr {
+  width: 100%;
+}
+
+#google-map {
+  margin: 10px;
+  margin-right: 0;
+}
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 40vh;
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 10px;
+  text-align: center;
+  margin: 10px;
 }

@@ -67,7 +67,7 @@ function Map(props) {
     <div
       id="google-map"
       ref={googleMapRef}
-      style={{ width: "400px", height: "300px" }}
+      style={{ width: "50%", height: "40vh", borderRadius: "10px" }}
     />
   );
 }

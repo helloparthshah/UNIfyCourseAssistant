@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { Table } from "react-bootstrap";
+import "../styles/Recommend.css";
 function Recommend(props) {
   const [recommendations, setRecommendations] = useState([]);
 
@@ -17,24 +18,39 @@ function Recommend(props) {
         console.log(err);
       });
   }, [props.user_id]);
+
   return (
     <div className="recommend">
-      <h1>Recommend</h1>
-      {/* list user_ids */}
-      <ul>
-        {recommendations.length > 0 ? (
-          recommendations.map((recommendation) => {
-            return (
-              <li key={recommendation.user_id}>
-                {recommendation.user_id} {recommendation.name}{" "}
-                {recommendation.n_sim_courses}
-              </li>
-            );
-          })
-        ) : (
-          <></>
-        )}
-      </ul>
+      <h1>People you would like</h1>
+      <Table striped bordered hover>
+        {/* user_id, name, percentage match */}
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Percentage Match</th>
+          </tr>
+        </thead>
+        <tbody>
+          {recommendations.length > 0 ? (
+            recommendations.map((recommendation) => {
+              return (
+                <tr
+                  key={recommendation.user_id}
+                  onClick={() => {
+                    // redirect to discord user profile
+                    window.location.href = `https://discordapp.com/users/${recommendation.user_id}`;
+                  }}
+                >
+                  <td>{recommendation.name}</td>
+                  <td>{recommendation.n_sim_courses}%</td>
+                </tr>
+              );
+            })
+          ) : (
+            <></>
+          )}
+        </tbody>
+      </Table>
     </div>
   );
 }

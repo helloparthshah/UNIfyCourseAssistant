@@ -22,6 +22,7 @@ client = discord.Client(intents=intents)
 slash = SlashCommand(client, sync_commands=True)
 members = []
 
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -95,7 +96,7 @@ async def _add_course(ctx=SlashContext, *, course, section):
     try:
         link = "http://127.0.0.1:5000/api/add"
         retjson = requests.post(
-            url=link, json={"course": course, "section": section, "user_id": ctx.author.id})
+            url=link, json={"course": course, "section": section, "user_id": ctx.author.id, "username": ctx.author.name})
         retjson = retjson.json()
         # check if 'error' exists in retjson
         if 'error' in retjson:
@@ -134,6 +135,7 @@ async def _add_course(ctx=SlashContext):
         notfound = discord.Embed(title="Error", color=0x00ff00)
         return await ctx.send(embed=notfound)
 
+
 def getLectureTimes(time):
     # Convert 10:00 - 10:50 AM, MWF to datetime objects
     t = time.split(',')[0]
@@ -142,6 +144,7 @@ def getLectureTimes(time):
     end = end.strip()
     return [start, end, time.split(',')[1].strip()]
 
+
 @tasks.loop(minutes=30)
 async def reminder():
     link = "http://127.0.0.1:5000/api/view"
@@ -149,7 +152,7 @@ async def reminder():
         retjson = requests.post(url=link, json={"user_id": members.id})
         retjson = retjson.json()
         for c in retjson:
-            tm = datetime.strptime(c['time'],"%I:%M %p %w")
+            tm = datetime.strptime(c['time'], "%I:%M %p %w")
             today = datetime.now()
             monday = today - timedelta(days=today.weekday())
             result = (monday + timedelta(days=int(c['time'][-1])))
@@ -165,7 +168,6 @@ async def reminder():
             await user.send(embed=embed)
 
 reminder.start()
-
 
 
 client.run(os.environ['TOKEN'])

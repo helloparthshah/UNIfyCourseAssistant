@@ -373,7 +373,7 @@ def getRecomendations():
                 similar_students.append({
                     "user_id": s['user_id'],
                     "name": s['name'],
-                    "n_sim_courses": n_sim_courses
+                    "n_sim_courses": n_sim_courses/len(courses)*100
                 })
     print(similar_students)
     # sort list of students by number of similar courses
