@@ -39,6 +39,7 @@ async def _faq(ctx=SlashContext, *, question=None):
     url = "https://gatosecksual.kunpai.space/" + url
     await ctx.send(url)
 
+
 @slash.slash(name="think", description="Think")
 async def _think(ctx=SlashContext):
     try:
@@ -47,8 +48,9 @@ async def _think(ctx=SlashContext):
         None
     await ctx.send(file=discord.File(random.choice(os.listdir(os.getcwd()))))
 
+
 @slash.slash(name="course", description="View information for a course")
-async def _course(ctx=SlashContext, *, course=None, section=None):
+async def _course(ctx=SlashContext, *, course=None, section=""):
     link = "http://127.0.0.1:5000/api/course"
     try:
         retjson = requests.post(
@@ -84,6 +86,7 @@ async def _prof(ctx=SlashContext, *, prof=None):
         return await ctx.send(embed=notfound)
     return None
 
+
 @slash.slash(name="add_course", description="Add a course")
 async def _add_course(ctx=SlashContext, *, course=None, section=None):
     try:
@@ -91,8 +94,9 @@ async def _add_course(ctx=SlashContext, *, course=None, section=None):
         retjson = requests.post(
             url=link, json={"course": course, "section": section, "user_id": ctx.author.id})
         retjson = retjson.json()
-        if(retjson['error']!= None):
-            courseadded = discord.Embed(title="Course already added", color=0x00ff00)
+        if(retjson['error'] != None):
+            courseadded = discord.Embed(
+                title="Course already added", color=0x00ff00)
             return await ctx.send(embed=courseadded)
         embed = discord.Embed(
             title=course.upper(), description="", color=0x00ff00)
@@ -106,16 +110,17 @@ async def _add_course(ctx=SlashContext, *, course=None, section=None):
         notfound = discord.Embed(title="Course not found", color=0x00ff00)
         return await ctx.send(embed=notfound)
 
+
 @slash.slash(name="view_courses", description="View your courses")
 async def _add_course(ctx=SlashContext):
     try:
         link = "http://127.0.0.1:5000/api/view"
-        retjson = requests.post(url = link, json={"user_id": ctx.author.id})
+        retjson = requests.post(url=link, json={"user_id": ctx.author.id})
         retjson = retjson.json()
         print(retjson)
         print(retjson[1])
         embed = discord.Embed(
-        title="Courses", description="", color=0x00ff00)
+            title="Courses", description="", color=0x00ff00)
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         for i in range(0, len(retjson)):
             print(retjson[i])
@@ -126,7 +131,6 @@ async def _add_course(ctx=SlashContext):
     except:
         notfound = discord.Embed(title="Error", color=0x00ff00)
         return await ctx.send(embed=notfound)
-        
 
 
 client.run(os.environ['TOKEN'])
