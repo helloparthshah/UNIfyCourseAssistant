@@ -10,7 +10,6 @@ function Calendar(props) {
         user_id: props.user_id,
       })
       .then((res) => {
-        console.log(res.data);
         // display as a file to download
         setCalendar(res.data);
       });

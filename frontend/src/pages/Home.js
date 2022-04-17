@@ -9,6 +9,8 @@ import Header from "../components/Header";
 import Rating from "../components/rating";
 import Calendar from "../components/Calendar";
 import SearchClass from "../components/SearchClass";
+import Recommend from "../components/Recommend";
+import Map from "../components/Map";
 function Home() {
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [user_id, setUser_id] = useState("");
@@ -79,6 +81,8 @@ function Home() {
   return (
     <>
       <Header />
+      <Map />
+      <Recommend user_id={user_id} />
       <SearchClass onClick={test} />
       <AddClass user_id={user_id} />
       <ViewClasses user_id={user_id} onClick={test} />

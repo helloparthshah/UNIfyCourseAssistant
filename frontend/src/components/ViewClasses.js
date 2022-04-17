@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/ViewClasses.css";
-import { useCookies } from "react-cookie";
 import { Table, Button } from "react-bootstrap";
 
 function ViewClasses(props) {
@@ -54,7 +53,7 @@ function ViewClasses(props) {
           {courses.length > 0 ? (
             courses.map((course) => {
               return (
-                <tr>
+                <tr key={course.crn}>
                   <td>{course.crn}</td>
                   <td>{course.title}</td>
                   <td>{course.section}</td>

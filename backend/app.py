@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+import random
+import uuid
 from bs4 import BeautifulSoup
 import json
 from icalendar import Event, Calendar
@@ -12,6 +14,12 @@ import ratemyprofessor
 
 import sqlite3
 from flask import g
+
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+API_KEY = os.getenv('API_KEY')
 
 DATABASE = './database.db'
 
@@ -205,6 +213,7 @@ def addCourse():
         cur.execute("INSERT INTO students VALUES (?, ?)",
                     (user_id, json.dumps([])))
         get_db().commit()
+        cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
         student = cur.fetchone()
         # student = [user_id, json.dumps([])]
     studentCourses = json.loads(student['courses'])
@@ -337,6 +346,75 @@ def getCalendar():
                              'dtstart': start})
             cal.add_component(ev)
     return Response(cal.to_ical(),  mimetype='text/calendar')
+
+
+@app.route("/api/recommend", methods=['GET', 'POST'])
+def getRecomendations():
+    # get list of students with similar courses
+    user_id = request.get_json()['user_id']
+    cur = get_db().cursor()
+    cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        return Response(json.dumps({'error': 'No courses found'}),  mimetype='application/json')
+    courses = json.loads(student['courses'])
+    # get list of students with similar courses
+    cur.execute("SELECT * FROM students")
+    students = cur.fetchall()
+    similar_students = []
+    for s in students:
+        if s['user_id'] != user_id:
+            # check for similar courses
+            s_courses = json.loads(s['courses'])
+            n_sim_courses = len(set(courses).intersection(s_courses))
+            if n_sim_courses > 0:
+                # add to list of students with similar courses as a dict
+                similar_students.append({
+                    "user_id": s['user_id'],
+                    "n_sim_courses": n_sim_courses
+                })
+    print(similar_students)
+    # sort list of students by number of similar courses
+    similar_students.sort(key=lambda x: x['n_sim_courses'], reverse=True)
+    # Only top 6 students are in the list
+    similar_students = similar_students[:6]
+    return Response(json.dumps(similar_students),  mimetype='application/json')
+
+
+@app.route("/api/create_test_users", methods=['GET', 'POST'])
+def createTestUsers():
+    # creates test users with random courses and random ids
+    courses = ["40593", "40581", "60527", "46253",
+               "61736", "40573", "60523", "57682"]
+    cur = get_db().cursor()
+    for i in range(0, 10):
+        # user_id is similar to 279174239972491276
+        user_id = str(random.randint(1000000000000000, 99999999999999999))
+        courses_sample = random.sample(
+            courses, random.randint(1, len(courses)))
+        courses_sample = json.dumps(courses_sample)
+        cur.execute("INSERT INTO students (user_id, courses) VALUES (?, ?)",
+                    (user_id, courses_sample))
+    get_db().commit()
+    return Response(json.dumps({'success': 'Test users created'}),  mimetype='application/json')
+
+
+@app.route("/api/location", methods=['GET', 'POST'])
+def getLocation():
+    query = request.get_json()['query']
+    url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+    params = {
+        "query": query,
+        "location": "38.53828240712879, -121.76172941812959",
+        "radius": "5000",
+        "region": "US",
+        "key": API_KEY,
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    # parse location data
+    location = data['results'][0]['geometry']['location']
+    return Response(json.dumps(location),  mimetype='application/json')
 
 
 school = ratemyprofessor.get_school_by_name("University of California Davis")
