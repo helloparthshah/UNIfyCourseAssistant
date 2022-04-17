@@ -53,6 +53,7 @@ function Map(props) {
     courses.forEach((course) => {
       console.log("Course:", course);
       let coordinates = JSON.parse(course.coordinates);
+      console.log("Coordinates:", coordinates);
       new window.google.maps.Marker({
         position: coordinates,
         map: googleMap,

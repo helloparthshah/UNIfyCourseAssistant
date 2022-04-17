@@ -26,7 +26,8 @@ function Recommend(props) {
           recommendations.map((recommendation) => {
             return (
               <li key={recommendation.user_id}>
-                {recommendation.user_id} {recommendation.n_sim_courses}
+                {recommendation.user_id} {recommendation.name}{" "}
+                {recommendation.n_sim_courses}
               </li>
             );
           })

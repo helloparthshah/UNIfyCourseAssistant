@@ -372,6 +372,7 @@ def getRecomendations():
                 # add to list of students with similar courses as a dict
                 similar_students.append({
                     "user_id": s['user_id'],
+                    "name": s['name'],
                     "n_sim_courses": n_sim_courses
                 })
     print(similar_students)
@@ -394,8 +395,8 @@ def createTestUsers():
         courses_sample = random.sample(
             courses, random.randint(1, len(courses)))
         courses_sample = json.dumps(courses_sample)
-        cur.execute("INSERT INTO students (user_id, courses) VALUES (?, ?)",
-                    (user_id, courses_sample))
+        cur.execute("INSERT INTO students (user_id,name, courses) VALUES (?,?, ?)",
+                    (user_id, "Test User", courses_sample))
     get_db().commit()
     return Response(json.dumps({'success': 'Test users created'}),  mimetype='application/json')
 
