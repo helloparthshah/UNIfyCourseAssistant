@@ -1,3 +1,5 @@
+from traceback import print_tb
+from unicodedata import name
 from aiohttp import request
 import discord
 import os
@@ -36,12 +38,12 @@ async def _faq(ctx=SlashContext, *, link=None):
     await ctx.send(url)
 
 
-@slash.slash(name="view_course", description="View information for a course")
+@slash.slash(name="course", description="View information for a course")
 async def _course(ctx=SlashContext, *, course=None, section=None):
     link = "http://127.0.0.1:5000/api/course"
     try:
         retjson = requests.post(
-            url=link, json={"course": course})
+            url=link, json={"course": course, "section": section})
         retjson = retjson.json()
         embed = discord.Embed(
             title=course.upper(), description="", color=0x00ff00)
@@ -72,6 +74,29 @@ async def _prof(ctx=SlashContext, *, prof=None):
         notfound = discord.Embed(title="Professor not found", color=0x00ff00)
         return await ctx.send(embed=notfound)
     return None
+
+@slash.slash(name="add_course", description="Add a course")
+async def _add_course(ctx=SlashContext, *, course=None, section=None):
+    try:
+        link = "http://127.0.0.1:5000/api/add"
+        retjson = requests.post(
+            url=link, json={"course": course, "section": section, "user_id": ctx.author.id})
+        retjson = retjson.json()
+        if(retjson['error']!= None):
+            courseadded = discord.Embed(title="Course already added", color=0x00ff00)
+            return await ctx.send(embed=courseadded)
+        embed = discord.Embed(
+            title=course.upper(), description="", color=0x00ff00)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        # for crns in sections get the class info
+        embed.add_field(name=course, value=f"> Title: {retjson['name']}\n> Instructor: {retjson['instructor']}\n> \
+                Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}\n> Discussion Location: {retjson['discussion_location']}", inline=False)
+        await ctx.send(embed=embed)
+
+    except:
+        notfound = discord.Embed(title="Course not found", color=0x00ff00)
+        return await ctx.send(embed=notfound)
+
 
 
 client.run(os.environ['TOKEN'])
