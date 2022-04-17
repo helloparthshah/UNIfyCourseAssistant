@@ -3,7 +3,8 @@ import axios from "axios";
 import "../styles/AddClass.css";
 import { ProgressBar, Form, FormControl, Button } from "react-bootstrap";
 function Rating() {
-  const progress = 50;
+  const [progress, setProgress] = useState("");
+  const [prof, setProf] = useState("");
   const courseName = "ECS150";
   useEffect(() => {
     axios
@@ -11,14 +12,22 @@ function Rating() {
         course: courseName,
       })
       .then((res) => {
-        const professors = res.data.instructor;
+        const professors = res.data[0].instructor;
+        setProf(professors);
+        console.log(prof);
+      });
+    axios
+      .post("/api/professor", {
+        professor: prof,
+      })
+      .then((res) => {
         console.log(res.data);
       });
-  }, []);
+  }, [prof, progress]);
 
   return (
     <div className="rate">
-      <h3>Simple Progress Bar</h3>
+      <h3>{prof}</h3>
       <ProgressBar now={progress} />
     </div>
   );
