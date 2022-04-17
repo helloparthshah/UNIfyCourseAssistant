@@ -36,7 +36,7 @@ async def _faq(ctx=SlashContext, *, link=None):
     await ctx.send(url)
 
 
-@slash.slash(name="course", description="View information for a course")
+@slash.slash(name="view_course", description="View information for a course")
 async def _course(ctx=SlashContext, *, course=None, section=None):
     link = "http://127.0.0.1:5000/api/course"
     try:
@@ -56,13 +56,14 @@ async def _course(ctx=SlashContext, *, course=None, section=None):
 
 @slash.slash(name="professor", description="View information for a professor")
 async def _prof(ctx=SlashContext, *, prof=None):
-    link = "http://127.0.0.1:5000/course/" + prof
-    retjson = requests.get(url=link)
-    retjson = retjson.json()
+    link = "http://127.0.0.1:5000/api/professor/"
+    retjson = requests.post(url=link, json={"professor": prof})
+    #retjson = retjson.json()
     print(retjson)
-    if len(retjson) == 0:
-        notfound = discord.Embed(title="Course not found", color=0x00ff00)
-        return await ctx.send(embed=notfound)
+    # if len(retjson) == 0:
+    #     notfound = discord.Embed(title="Course not found", color=0x00ff00)
+    #     return await ctx.send(embed=notfound)
+    return None
 
 
 client.run(os.environ['TOKEN'])
