@@ -1,12 +1,17 @@
-.rate{
+.rate {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 40vh;
     width: 40vh;
+    border: 1px solid black;
+    border-radius: 10px;
+    text-align: center;
+    padding: 10px;
 }
-.Category {
-    margin-left: 4vh;
-}
-.rateBar{
-    margin-left: 4vh;
-    margin-bottom: 1vh;
+
+.rateBar {
+    width: 100%;
+    margin-bottom: 20px;
 }
