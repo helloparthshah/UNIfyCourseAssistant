@@ -39,21 +39,20 @@ async def _faq(ctx=SlashContext, *, link=None):
 @slash.slash(name="course", description="View information for a course")
 async def _course(ctx=SlashContext, *, course=None, section=None):
     link = "http://127.0.0.1:5000/api/course"
-    retjson = requests.post(
-        url=link, json={"course": course})
-    retjson = retjson.json()
-    print(retjson)
-    if len(retjson) == 0:
+    try:
+        retjson = requests.post(
+            url=link, json={"course": course})
+        retjson = retjson.json()
+        embed = discord.Embed(
+            title=course.upper(), description="", color=0x00ff00)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        # for crns in sections get the class info
+        embed.add_field(name=course, value=f"> Title: {retjson[0]['name']}\n> Instructor: {retjson[0]['instructor']}\n> \
+                Units: {retjson[0]['units']}\n> Location: {retjson[0]['location']}\n> Time: {retjson[0]['time']}\n> Discussion: {retjson[0]['discussion']}\n> Discussion Location: {retjson[0]['discussion_location']}", inline=False)
+        await ctx.send(embed=embed)
+    except:
         notfound = discord.Embed(title="Course not found", color=0x00ff00)
         return await ctx.send(embed=notfound)
-    embed = discord.Embed(
-        title=course.upper(), description="", color=0x00ff00)
-    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-    # for crns in sections get the class info
-    embed.add_field(name=course, value=f"> Title: {retjson['name']}\n> Instructor: {retjson['instructor']}\n> \
-            Units: {retjson['units']}\n> Location: {retjson['location']}\n> Time: {retjson['time']}\n> Discussion: {retjson['discussion']}", inline=False)
-    await ctx.send(embed=embed)
-
 
 @slash.slash(name="professor", description="View information for a professor")
 async def _prof(ctx=SlashContext, *, prof=None):
