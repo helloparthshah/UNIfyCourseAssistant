@@ -18,6 +18,9 @@ function Home() {
     // check if cookie exists
     if (user_id && user_id !== "") {
       console.log(user_id);
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
     } else {
       // extract code from url
       const code = window.location.href.split("?code=")[1];
@@ -51,6 +54,7 @@ function Home() {
               if (data.id) {
                 // set cookie and set time to expire in 1 week
                 setCookie("user_id", data.id, { path: "/", maxAge: 604800 });
+                window.location.href = "/";
               }
             });
         });

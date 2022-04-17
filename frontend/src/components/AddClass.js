@@ -26,6 +26,8 @@ function AddClass(props) {
       })
       .then((res) => {
         console.log(res.data);
+        // reload page
+        window.location.reload();
       });
   };
 
