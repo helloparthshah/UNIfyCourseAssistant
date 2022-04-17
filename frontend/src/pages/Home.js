@@ -81,7 +81,7 @@ function Home() {
   return (
     <>
       <Header />
-      <Map />
+      <Map user_id={user_id} />
       <Recommend user_id={user_id} />
       <SearchClass onClick={test} />
       <AddClass user_id={user_id} />

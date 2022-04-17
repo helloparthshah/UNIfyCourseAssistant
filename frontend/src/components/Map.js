@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRef } from "react";
 
-const Map = ({ placeName }) => {
+function Map(props) {
   let getLocation = async (query) => {
     //   returns the coordinates of the place
     let res = await axios.post("/api/location", {
@@ -34,11 +34,11 @@ const Map = ({ placeName }) => {
     window.document.body.appendChild(googleMapScript);
     googleMapScript.addEventListener("load", () => {
       //   getLatLng();
-      loadMarker();
+      loadMarkers();
     });
   }, []);
 
-  let loadMarker = async () => {
+  let loadMarkers = async () => {
     googleMap = new window.google.maps.Map(googleMapRef.current, {
       zoom: 14,
       center: {
@@ -47,7 +47,40 @@ const Map = ({ placeName }) => {
       },
       disableDefaultUI: true,
     });
-    let coordinates = await getLocation("YOUNG 198");
+    axios
+      .post("/api/view", {
+        user_id: props.user_id,
+      })
+      .then((res) => {
+        console.log(res.data);
+        res.data.forEach((course) => {
+          console.log(course);
+          if (course.location) {
+            getLocation(course.location).then((coordinates) => {
+              console.log(res);
+              new window.google.maps.Marker({
+                position: coordinates,
+                map: googleMap,
+                title: course.location,
+              });
+            });
+          }
+        });
+        /* for (let c in res.data) {
+          console.log(res.data[c]);
+          if (res.data[c].location) {
+            getLocation(res.data[c].location).then((coordinates) => {
+              console.log(res);
+              new window.google.maps.Marker({
+                position: coordinates,
+                map: googleMap,
+                title: res.data[c].location,
+              });
+            });
+          }
+        } */
+      });
+    /* await getLocation("YOUNG 198");
     console.log("Coordinates", coordinates);
     let lat = coordinates.lat;
     let lng = coordinates.lng;
@@ -60,44 +93,9 @@ const Map = ({ placeName }) => {
       });
     } catch (err) {
       console.log(err);
-    }
+    } */
   };
 
-  const createGoogleMap = (coordinates) => {
-    googleMap = new window.google.maps.Map(googleMapRef.current, {
-      zoom: 16,
-      center: {
-        lat: coordinates.lat(),
-        lng: coordinates.lng(),
-      },
-      disableDefaultUI: true,
-    });
-  };
-
-  const getLatLng = () => {
-    let lat, lng, placeId;
-    new window.google.maps.Geocoder().geocode(
-      { address: `${placeName}` },
-      function (results, status) {
-        if (status === window.google.maps.GeocoderStatus.OK) {
-          placeId = results[0].place_id;
-          createGoogleMap(results[0].geometry.location);
-          lat = results[0].geometry.location.lat();
-          lng = results[0].geometry.location.lng();
-          new window.google.maps.Marker({
-            position: { lat, lng },
-            map: googleMap,
-            animation: window.google.maps.Animation.DROP,
-            title: `${placeName}`,
-          });
-        } else {
-          alert(
-            "Geocode was not successful for the following reason: " + status
-          );
-        }
-      }
-    );
-  };
   return (
     <div
       id="google-map"
@@ -105,6 +103,6 @@ const Map = ({ placeName }) => {
       style={{ width: "400px", height: "300px" }}
     />
   );
-};
+}
 
 export default Map;
