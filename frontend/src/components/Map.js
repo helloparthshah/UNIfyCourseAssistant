@@ -43,11 +43,9 @@ function Map(props) {
 
   let loadMarkers = async () => {
     googleMap = new window.google.maps.Map(googleMapRef.current, {
-      zoom: 14,
-      center: {
-        lat: 38.53828240712879,
-        lng: -121.76172941812959,
-      },
+      zoom: 16,
+      // 38.5416056137645, -121.7514480204867
+      center: { lat: 38.5416056137645, lng: -121.7514480204867 },
       disableDefaultUI: true,
     });
     courses.forEach((course) => {

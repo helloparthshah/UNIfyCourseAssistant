@@ -61,6 +61,7 @@ table tr {
 }
 
 #google-map {
+  border: 1px solid black;
   margin: 10px;
   margin-right: 0;
 }

@@ -11,3 +11,10 @@
     margin: 10px;
     margin-left: 0;
 }
+
+.add-remove {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}

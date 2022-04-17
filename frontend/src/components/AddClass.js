@@ -32,6 +32,20 @@ function AddClass(props) {
       });
   };
 
+  let removeClass = () => {
+    axios
+      .post("/api/remove", {
+        course: courseName,
+        section: section,
+        user_id: props.user_id,
+      })
+      .then((res) => {
+        console.log(res.data);
+        // reload page
+        window.location.reload();
+      });
+  };
+
   return (
     <div className="add-class">
       <Form>
@@ -59,9 +73,14 @@ function AddClass(props) {
             Enter class in the form of ECS150 or crn
           </Form.Text>
         </Form.Group>
-        <Button variant="primary" onClick={getClass}>
-          Submit
-        </Button>
+        <div className="add-remove">
+          <Button variant="primary" onClick={getClass}>
+            Submit
+          </Button>
+          <Button variant="danger" onClick={removeClass}>
+            Remove
+          </Button>
+        </div>
       </Form>
     </div>
   );

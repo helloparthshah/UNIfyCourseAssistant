@@ -239,6 +239,40 @@ def addCourse():
     return Response(json.dumps(c),  mimetype='application/json')
 
 
+@app.route("/api/remove", methods=['GET', 'POST'])
+def removeCourse():
+    c = None
+    course = request.get_json()['course']
+    section = request.get_json()['section']
+    user_id = request.get_json()['user_id']
+    cur = get_db().cursor()
+    cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        return Response(json.dumps({'error': 'No student found'}),  mimetype='application/json')
+    studentCourses = json.loads(student['courses'])
+    sections = getClassInfo(course)
+    if len(sections) == 0:
+        return Response(json.dumps({'error': 'No sections found'}),  mimetype='application/json')
+    c = None
+    for s in sections:
+        print(s)
+        if s['section'].lower() == section.lower():
+            if s['crn'] in studentCourses:
+                c = s
+                # add crn to student's list of courses
+                studentCourses.remove(s['crn'])
+                cur.execute(
+                    "UPDATE students SET courses=? WHERE user_id=?", (json.dumps(studentCourses), student['user_id']))
+                get_db().commit()
+                break
+            else:
+                return Response(json.dumps({'error': 'Course already added'}),  mimetype='application/json')
+    if c is None:
+        return Response(json.dumps({'error': 'No section found'}),  mimetype='application/json')
+    return Response(json.dumps(c),  mimetype='application/json')
+
+
 @app.route("/api/view", methods=['GET', 'POST'])
 def viewCourse():
     user_id = request.get_json()['user_id']
@@ -446,10 +480,13 @@ def getRecomendations():
 
 @app.route("/api/create_test_users", methods=['GET', 'POST'])
 def createTestUsers():
+    # remove all users with the username Test User
+    cur = get_db().cursor()
+    cur.execute("DELETE FROM students WHERE name='Test User'")
+    get_db().commit()
     # creates test users with random courses and random ids
     courses = ["40593", "40581", "60527", "46253",
                "61736", "40573", "60523", "57682"]
-    cur = get_db().cursor()
     for i in range(0, 10):
         # user_id is similar to 279174239972491276
         user_id = str(random.randint(1000000000000000, 99999999999999999))
@@ -467,7 +504,7 @@ def getCoordinates(query):
         url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
         params = {
             "query": query,
-            "location": "38.53828240712879, -121.76172941812959",
+            "location": "38.5416056137645,-121.7514480204867",
             "radius": "5000",
             "region": "US",
             "key": API_KEY,
