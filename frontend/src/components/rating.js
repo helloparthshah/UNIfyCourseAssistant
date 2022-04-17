@@ -3,9 +3,13 @@ import axios from "axios";
 import "../styles/AddClass.css";
 import { ProgressBar, Form, FormControl, Button } from "react-bootstrap";
 function Rating() {
-  const [progress, setProgress] = useState(0);
+  const [rate, setRate] = useState(0);
+  const [diff, setDiff] = useState(0);
+  const [takeagain, setTake] = useState(0);
+  const [numRateing, setNum] = useState(0);
+
   const [prof, setProf] = useState("");
-  const courseName = "ECS150";
+  const courseName = "ECS188";
   useEffect(() => {
     axios
       .post("/api/course", {
@@ -19,16 +23,25 @@ function Rating() {
             professor: professors,
           })
           .then((res) => {
-            setProgress(res.data.rating * 20.0);
-            console.log(res.data.rating);
+            setRate(res.data.rating * 20.0);
+            setDiff(res.data.difficulty * 20.0);
+            setTake(res.data.would_take_again);
+            setNum(res.data.num_ratings);
+            console.log(res.data.would_take_again);
           });
       });
-  }, [prof, progress]);
+  }, [prof, rate, diff, takeagain, numRateing]);
 
   return (
     <div className="rate">
-      <h3>{prof}</h3>
-      <ProgressBar now={progress} />
+      <h2>{prof}</h2>
+      <h5 className="Category">Number of Ratings: {numRateing}</h5>
+      <h5 className="Category">Rating</h5>
+      <ProgressBar className="rateBar" now={rate} />
+      <h5 className="Category">Difficulty</h5>
+      <ProgressBar className="rateBar" now={diff} />
+      <h5 className="Category">Would take again</h5>
+      <ProgressBar className="rateBar" now={takeagain} />
     </div>
   );
 }
