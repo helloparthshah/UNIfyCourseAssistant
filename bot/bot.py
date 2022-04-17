@@ -39,7 +39,10 @@ async def _faq(ctx=SlashContext, *, question=None):
 
 @slash.slash(name="think", description="Think")
 async def _think(ctx=SlashContext):
-    os.chdir("./think")
+    try:
+        os.chdir("./think")
+    except:
+        None
     await ctx.send(file=discord.File(random.choice(os.listdir(os.getcwd()))))
 
 @slash.slash(name="course", description="View information for a course")
