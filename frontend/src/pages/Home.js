@@ -6,6 +6,8 @@ import Login from "../components/login";
 import "../styles/rate.css";
 import { useCookies } from "react-cookie";
 import Header from "../components/Header";
+import Rating from "../components/rating";
+import Calendar from "../components/Calendar";
 function Home() {
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const [user_id, setUser_id] = useState("");
@@ -69,6 +71,8 @@ function Home() {
       <Header />
       <AddClass user_id={user_id} />
       <ViewClasses user_id={user_id} />
+      <Rating prof={"Devanbu"} />
+      <Calendar user_id={user_id} />
     </>
   );
 }

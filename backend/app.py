@@ -173,7 +173,7 @@ def getCourse():
             continue
         else:
             # crn, time, name, location, section, title, ge, instructor, units, discussion
-            if section is None or section == row['section']:
+            if section is None or section == '' or section == row['section']:
                 courses.append({
                     'crn': row['crn'],
                     'time': row['time'],
@@ -256,6 +256,86 @@ def viewCourse():
             'discussion_location': course['discussion_location']
         })
     return Response(json.dumps(c_list),  mimetype='application/json')
+
+
+def getLectureTimes(time):
+    # Convert 10:00 - 10:50 AM, MWF to datetime objects
+    t = time.split(',')[0]
+    start, end = t.split('-')
+    start = start.strip()+' '+end.strip().split(' ')[1]
+    end = end.strip()
+    return [start, end, time.split(',')[1].strip()]
+
+
+@app.route("/api/calendar", methods=['GET', 'POST'])
+def getCalendar():
+    user_id = request.get_json()['user_id']
+    cal = Calendar()
+    cur = get_db().cursor()
+    cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        return Response(json.dumps({'error': 'No courses found'}),  mimetype='application/json')
+    courses = json.loads(student['courses'])
+    today = datetime.today()
+    if term == '01':
+        first_monday = datetime(year=today.year, day=1, month=3)
+    elif term == '03':
+        first_monday = datetime(year=today.year, month=3, day=28)
+    else:
+        first_monday = datetime(year=today.year, month=9, day=21)
+
+    for c in courses:
+        cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
+        course = cur.fetchone()
+        times = getLectureTimes(course['time'])
+        day = times[2][0]
+        # Change first monday to first day (Can be MTWRF)
+        if day == 'M':
+            fm = first_monday
+        elif day == 'T':
+            fm = first_monday.replace(day=first_monday.day+1)
+        elif day == 'W':
+            fm = first_monday.replace(day=first_monday.day+2)
+        elif day == 'R':
+            fm = first_monday.replace(day=first_monday.day+3)
+        elif day == 'F':
+            fm = first_monday.replace(day=first_monday.day+4)
+        start = datetime.strptime(times[0], '%I:%M %p')
+        start = datetime.now().replace(year=fm.year, month=fm.month,
+                                       day=fm.day, hour=start.hour, minute=start.minute)
+        end = datetime.strptime(times[1], '%I:%M %p')
+        end = datetime.now().replace(year=fm.year, month=fm.month,
+                                     day=fm.day, hour=end.hour, minute=end.minute)
+        ev = Event()
+        ev.add('summary', course['course'] + ' '+course['section'] +
+               ' - '+course['name']+' Lecture')
+        ev.add('dtstart', start)
+        ev.add('dtend', end)
+        ev.add('location', course['location'])
+        days = times[2]
+        dlist = []
+        # repeat event for each day in days
+        for day in days:
+            day = day.lower()
+            if day == 'm':
+                day = 'MO'
+            elif day == 't':
+                day = 'TU'
+            elif day == 'w':
+                day = 'WE'
+            elif day == 'r':
+                day = 'TH'
+            elif day == 'f':
+                day = 'FR'
+            dlist.append(day)
+
+            ev.add('rrule', {'freq': 'weekly',
+                             'byday': dlist,
+                             'count': 11*len(dlist),
+                             'dtstart': start})
+            cal.add_component(ev)
+    return Response(cal.to_ical(),  mimetype='text/calendar')
 
 
 school = ratemyprofessor.get_school_by_name("University of California Davis")
