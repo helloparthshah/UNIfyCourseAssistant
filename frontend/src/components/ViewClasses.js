@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/ViewClasses.css";
 import { useCookies } from "react-cookie";
+import { Table, Button } from "react-bootstrap";
 
 function ViewClasses(props) {
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
@@ -34,18 +35,41 @@ function ViewClasses(props) {
 
   return (
     <div className="view-class">
-      {courses.length > 0 ? (
-        courses.map((course) => {
-          return (
-            <div key={course.crn} className="course-div">
-              <div className="course-name">{course.title}</div>
-              <div className="course-section">{course.section}</div>
-            </div>
-          );
-        })
-      ) : (
-        <></>
-      )}
+      <Table striped bordered hover>
+        {/* crn, time, name, location, section, title, ge, instructor, units, discussion */}
+        <thead>
+          <tr>
+            <th>CRN</th>
+            <th>Title</th>
+            <th>Section</th>
+            <th>Professor</th>
+            <th>Units</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Discussion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {courses.length > 0 ? (
+            courses.map((course) => {
+              return (
+                <tr>
+                  <td>{course.crn}</td>
+                  <td>{course.title}</td>
+                  <td>{course.section}</td>
+                  <td>{course.instructor}</td>
+                  <td>{course.units}</td>
+                  <td>{course.time}</td>
+                  <td>{course.location}</td>
+                  <td>{course.discussion}</td>
+                </tr>
+              );
+            })
+          ) : (
+            <></>
+          )}
+        </tbody>
+      </Table>
     </div>
   );
 }
