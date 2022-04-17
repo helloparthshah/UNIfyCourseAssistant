@@ -9,7 +9,7 @@ function Rating() {
   const [numRateing, setNum] = useState(0);
 
   const [prof, setProf] = useState("");
-  const courseName = "ECS188";
+  const courseName = "ECS150";
   useEffect(() => {
     axios
       .post("/api/course", {
