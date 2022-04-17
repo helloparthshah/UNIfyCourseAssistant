@@ -345,8 +345,70 @@ def getCalendar():
                              'byday': dlist,
                              'count': 11*len(dlist),
                              'dtstart': start})
-            cal.add_component(ev)
+        cal.add_component(ev)
     return Response(cal.to_ical(),  mimetype='text/calendar')
+
+
+@app.route("/api/events", methods=['GET', 'POST'])
+def getEvents():
+    user_id = request.get_json()['user_id']
+    events = []
+    cur = get_db().cursor()
+    cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        return Response(json.dumps({'error': 'No courses found'}),  mimetype='application/json')
+    courses = json.loads(student['courses'])
+
+    # date of the monday of the current week
+    first_monday = datetime.today()
+    while first_monday.weekday() != 0:
+        first_monday = first_monday - timedelta(days=1)
+    # list of colors for each course
+    colors = [
+        '#0099ff',
+        '#009900',
+        '#ff9900',
+        '#ff0000',
+        '#0066ff',
+        '#00ccff',
+    ]
+    for c in courses:
+        backColor = colors[courses.index(c)]
+        cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
+        course = cur.fetchone()
+        times = getLectureTimes(course['time'])
+        days = times[2]
+        # repeat event for each day in days
+        for day in days:
+            day = day.lower()
+            if day == 'm':
+                # create a datetime object for monday
+                fm = first_monday
+            elif day == 't':
+                fm = first_monday.replace(day=first_monday.day+1)
+            elif day == 'w':
+                fm = first_monday.replace(day=first_monday.day+2)
+            elif day == 'r':
+                fm = first_monday.replace(day=first_monday.day+3)
+            elif day == 'f':
+                fm = first_monday.replace(day=first_monday.day+4)
+
+            start = datetime.strptime(times[0], '%I:%M %p')
+            start = datetime.now().replace(year=fm.year, month=fm.month,
+                                           day=fm.day, hour=start.hour, minute=start.minute)
+            end = datetime.strptime(times[1], '%I:%M %p')
+            end = datetime.now().replace(year=fm.year, month=fm.month,
+                                         day=fm.day, hour=end.hour, minute=end.minute)
+            events.append({
+                'id': c,
+                'text': course['course'] + ' '+course['section'] +
+                ' - '+course['name']+' Lecture',
+                'start': start.strftime('%Y-%m-%dT%H:%M:%S'),
+                'end': end.strftime('%Y-%m-%dT%H:%M:%S'),
+                'backColor': backColor,
+            })
+    return Response(json.dumps(events),  mimetype='application/json')
 
 
 @app.route("/api/recommend", methods=['GET', 'POST'])
@@ -375,7 +437,6 @@ def getRecomendations():
                     "name": s['name'],
                     "n_sim_courses": n_sim_courses/len(courses)*100
                 })
-    print(similar_students)
     # sort list of students by number of similar courses
     similar_students.sort(key=lambda x: x['n_sim_courses'], reverse=True)
     # Only top 6 students are in the list

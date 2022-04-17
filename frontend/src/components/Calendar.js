@@ -1,9 +1,44 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
+import { DayPilotCalendar } from "@daypilot/daypilot-lite-react";
 
 function Calendar(props) {
+  const [user_id, setUser_id] = useState("");
   const [calendar, setCalendar] = useState([]);
+  const [events, setEvents] = useState([]);
+  const config = {
+    viewType: "Week",
+    // startdate is the current
+    startDate: "2022-04-11",
+    timeRangeSelectedHandling: "Disabled",
+    eventDeleteHandling: "Disabled",
+    eventMoveHandling: "Disabled",
+    eventResizeHandling: "Disabled",
+    eventClickHandling: "Disabled",
+    eventHoverHandling: "Disabled",
+    durationBarVisible: false,
+  };
+
+  useEffect(() => {
+    setUser_id(props.user_id);
+  }, [props.user_id]);
+
+  useEffect(() => {
+    axios
+      .post("/api/events", {
+        user_id: user_id,
+      })
+      .then((res) => {
+        setEvents(res.data);
+        // set config events to res.data
+        /* setConfig({
+          ...config,
+          events: res.data,
+        }); */
+      });
+  }, [user_id]);
+
   useEffect(() => {
     axios
       .post("/api/calendar", {
@@ -29,7 +64,10 @@ function Calendar(props) {
   return (
     <div className="calendar">
       <h1>Calendar</h1>
-      <Button onClick={downloadCalendar}>Download</Button>
+      <div className="cal">
+        <DayPilotCalendar {...config} events={events} />
+      </div>
+      <Button onClick={downloadCalendar}>Export</Button>
     </div>
   );
 }
