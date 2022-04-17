@@ -161,7 +161,7 @@ def home():
 def getCourse():
     # get course from body
     course = request.get_json()['course']
-    section = None
+    section = request.get_json()['section']
     sections = getClassInfo(course)
     print(sections)
     courses = []
