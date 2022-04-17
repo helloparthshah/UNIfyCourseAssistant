@@ -135,6 +135,20 @@ async def _add_course(ctx=SlashContext):
         notfound = discord.Embed(title="Error", color=0x00ff00)
         return await ctx.send(embed=notfound)
 
+@slash.slash(name="calendar", description="Sends your calendar")
+async def _cal(ctx = SlashContext):
+    try:
+        link = "http://127.0.0.1:5000/api/calendar"
+        retjson = requests.post(url=link, json={"user_id": ctx.author.id})
+        await ctx.send(file=discord.File(retjson))
+    except:
+        notfound = discord.Embed(title="Error", color=0x00ff00)
+        return await ctx.send(embed=notfound)
+
+
+
+
+
 
 def getLectureTimes(time):
     # Convert 10:00 - 10:50 AM, MWF to datetime objects
