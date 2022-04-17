@@ -18,7 +18,14 @@ function Calendar(props) {
 
   let downloadCalendar = () => {
     //   download calendar as ics file
-    window.open("data:text/calendar;charset=utf8," + escape(calendar));
+    const blob = new Blob([calendar], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "calendar.ics";
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   };
   return (
     <div>
