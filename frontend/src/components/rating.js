@@ -3,7 +3,7 @@ import axios from "axios";
 import "../styles/AddClass.css";
 import { ProgressBar, Form, FormControl, Button } from "react-bootstrap";
 function Rating() {
-  const [progress, setProgress] = useState("");
+  const [progress, setProgress] = useState(0);
   const [prof, setProf] = useState("");
   const courseName = "ECS150";
   useEffect(() => {
@@ -19,7 +19,8 @@ function Rating() {
             professor: professors,
           })
           .then((res) => {
-            console.log(res.data);
+            setProgress(res.data.rating * 20.0);
+            console.log(res.data.rating);
           });
       });
   }, [prof, progress]);
