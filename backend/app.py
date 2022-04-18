@@ -464,12 +464,37 @@ def getRecomendations():
             # check for similar courses
             s_courses = json.loads(s['courses'])
             n_sim_courses = len(set(courses).intersection(s_courses))
+            # also check for similar professors and locations
+            # get list of courses for every crn in student
+            s_profs = []
+            s_locations = []
+            for c in s_courses:
+                cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
+                course = cur.fetchone()
+                s_profs.append(course['professor'])
+                s_locations.append(course['location'])
+
+            # get list of courses for every crn in current student
+            c_profs = []
+            c_locations = []
+            for c in courses:
+                cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
+                course = cur.fetchone()
+                c_profs.append(course['professor'])
+                c_locations.append(course['location'])
+
+            # check for similar professors
+            n_sim_profs = len(set(s_profs).intersection(c_profs))
+            # check for similar locations
+            n_sim_locations = len(set(s_locations).intersection(c_locations))
+            n_sim_courses = n_sim_courses + n_sim_profs + n_sim_locations
             if n_sim_courses > 0:
                 # add to list of students with similar courses as a dict
                 similar_students.append({
                     "user_id": s['user_id'],
                     "name": s['name'],
-                    "n_sim_courses": n_sim_courses/len(courses)*100
+                    # make this a score out of 100
+                    "n_sim_courses": n_sim_courses*100/len(courses)/3,
                 })
     # sort list of students by number of similar courses
     similar_students.sort(key=lambda x: x['n_sim_courses'], reverse=True)
