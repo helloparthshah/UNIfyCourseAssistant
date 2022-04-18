@@ -83,6 +83,16 @@ table tr {
   margin: 10px;
 }
 
-.cal{
+.cal {
   margin: 10px;
+}
+
+.calendar_default_event_inner {
+  background: #2e78d6;
+  color: #fff !important;
+  border: none;
+  border-radius: 5px;
+  font-size: 10pt;
+  padding: 5px;
+  opacity: 0.8;
 }

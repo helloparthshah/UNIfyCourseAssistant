@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
-import { DayPilotCalendar } from "@daypilot/daypilot-lite-react";
+import { DayPilotCalendar, DayPilot } from "@daypilot/daypilot-lite-react";
 
 function Calendar(props) {
   const [user_id, setUser_id] = useState("");
@@ -9,8 +9,9 @@ function Calendar(props) {
   const [events, setEvents] = useState([]);
   const config = {
     viewType: "Week",
-    // startdate is the current
-    startDate: "2022-04-11",
+    // startdate is the monday of the current week
+    startDate: new DayPilot.Date().firstDayOfWeek().addDays(-1),
+    // startDate: "2022-04-11",
     timeRangeSelectedHandling: "Disabled",
     eventDeleteHandling: "Disabled",
     eventMoveHandling: "Disabled",
