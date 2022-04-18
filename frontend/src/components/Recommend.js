@@ -42,7 +42,8 @@ function Recommend(props) {
                   }}
                 >
                   <td>{recommendation.name}</td>
-                  <td>{recommendation.n_sim_courses}%</td>
+                  {/* round to 2 decimals */}
+                  <td>{recommendation.n_sim_courses.toFixed(2)}%</td>
                 </tr>
               );
             })
