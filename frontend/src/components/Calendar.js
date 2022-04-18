@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
-import { DayPilotCalendar, DayPilot } from "@daypilot/daypilot-lite-react";
+import { DayPilotCalendar, DayPilot } from "daypilot-pro-react";
 
 function Calendar(props) {
   const [user_id, setUser_id] = useState("");
@@ -18,7 +18,10 @@ function Calendar(props) {
     eventResizeHandling: "Disabled",
     eventClickHandling: "Disabled",
     eventHoverHandling: "Disabled",
+    showCurrentTime: true,
     durationBarVisible: false,
+    headerDateFormat: "dddd",
+    weekStarts: 1,
   };
 
   useEffect(() => {
