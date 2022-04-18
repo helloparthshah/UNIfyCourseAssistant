@@ -10,7 +10,7 @@ function Header() {
           src="https://www.mondaviarts.org/sites/default/files/images/article/gary-may-trek-cropped.jpg"
           alt="logo"
         />
-        <h1>UCDavis Course Helper</h1>
+        <h1>UNIfy Course Assistant</h1>
       </div>
       <Login />
     </div>

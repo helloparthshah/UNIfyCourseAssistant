@@ -30,6 +30,7 @@ function Calendar(props) {
         user_id: user_id,
       })
       .then((res) => {
+        console.log(res.data);
         setEvents(res.data);
         // set config events to res.data
         /* setConfig({

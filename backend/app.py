@@ -430,16 +430,16 @@ def getEvents():
 
             start = datetime.strptime(times[0], '%I:%M %p')
             start = datetime.now().replace(year=fm.year, month=fm.month,
-                                           day=fm.day, hour=start.hour, minute=start.minute)
+                                           day=fm.day, hour=start.hour, minute=start.minute, second=0)
             end = datetime.strptime(times[1], '%I:%M %p')
             end = datetime.now().replace(year=fm.year, month=fm.month,
-                                         day=fm.day, hour=end.hour, minute=end.minute)
+                                         day=fm.day, hour=end.hour, minute=end.minute, second=0)
             events.append({
                 'id': c,
                 'text': course['course'] + ' '+course['section'] +
                 ' - '+course['name']+' Lecture',
-                'start': start.strftime('%Y-%m-%dT%H:%M:%S'),
-                'end': end.strftime('%Y-%m-%dT%H:%M:%S'),
+                'start': start.isoformat().split('.')[0],
+                'end': end.isoformat().split('.')[0],
                 'backColor': backColor,
             })
     return Response(json.dumps(events),  mimetype='application/json')
@@ -486,12 +486,12 @@ def createTestUsers():
     get_db().commit()
     # creates test users with random courses and random ids
     courses = ["40593", "40581", "60527", "46253",
-               "61736", "40573", "60523", "57682"]
+               "61736", "40573", "60523", "57682", "41196", "40443"]
     for i in range(0, 10):
         # user_id is similar to 279174239972491276
         user_id = str(random.randint(1000000000000000, 99999999999999999))
         courses_sample = random.sample(
-            courses, random.randint(1, len(courses)))
+            courses, random.randint(2, 5))
         courses_sample = json.dumps(courses_sample)
         cur.execute("INSERT INTO students (user_id,name, courses) VALUES (?,?, ?)",
                     (user_id, "Test User", courses_sample))
