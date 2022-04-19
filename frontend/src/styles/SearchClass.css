@@ -16,6 +16,16 @@
     cursor: pointer;
 }
 
-.search-class form{
-padding-bottom: 20px;
+.search-class form {
+    padding-bottom: 20px;
+}
+
+.collision {
+    /* color row red with 0.7 opacity */
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.no-collision {
+    /* color row green with 0.7 opacity */
+    background-color: rgba(0, 255, 0, 0.2);
 }
