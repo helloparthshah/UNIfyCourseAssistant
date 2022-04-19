@@ -96,7 +96,7 @@ function Home() {
       <Header />
       <div className="container">
         <div className="row-add">
-          <SearchClass onClick={test} />
+          <SearchClass user_id={user_id} onClick={test} />
           <Rating prof={professor} />
         </div>
         <div className="row-add">
