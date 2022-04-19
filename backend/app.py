@@ -441,6 +441,8 @@ def getEvents():
                 'start': start.isoformat().split('.')[0],
                 'end': end.isoformat().split('.')[0],
                 'backColor': backColor,
+                'toolTip': course['course'] + ' '+course['section'] +
+                ' - '+course['name']+' Lecture'
             })
     return Response(json.dumps(events),  mimetype='application/json')
 
