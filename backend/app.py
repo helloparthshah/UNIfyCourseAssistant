@@ -34,7 +34,7 @@ def get_db():
         # create the courses table if it doesn't exist
         # crn, time, name, location, section, title, ge, instructor, units, discussion
         cur.execute(
-            'CREATE TABLE IF NOT EXISTS courses (crn TEXT, time TEXT, course TEXT, location TEXT, section TEXT, seats NUMBER, name TEXT, ge TEXT, professor TEXT, units TEXT, discussion TEXT, discussion_location TEXT,coordinates TEXT)')
+            'CREATE TABLE IF NOT EXISTS courses (crn TEXT, time TEXT, course TEXT, location TEXT, section TEXT, seats NUMBER, name TEXT, ge TEXT, professor TEXT, units TEXT, discussion TEXT, discussion_location TEXT,coordinates TEXT,termcode TEXT)')
         # create the students table if it doesn't exist
         cur.execute(
             'CREATE TABLE IF NOT EXISTS students (user_id TEXT,name TEXT, courses TEXT)')
@@ -69,6 +69,9 @@ conn = init_sqlite() '''
 
 # term = '01' if datetime.now().month <= 3 else '03' if datetime.now().month <= 6 else '10'
 term = '03'
+# Spring 2022=202203 Winter 2022=202201 Fall 2022=202210
+year = datetime.now().year
+termCode = f'{year}{term}'
 
 
 def getClassInfo(course):
@@ -92,14 +95,12 @@ def getClassInfo(course):
                 'units': row['units'],
                 'discussion': row['discussion'],
                 'discussion_location': row['discussion_location'],
-                'coordinates': row['coordinates']
+                'coordinates': row['coordinates'],
+                'termcode': row['termcode']
             }
             sections.append(row)
         return sections
 
-    # Spring 2022=202203 Winter 2022=202201 Fall 2022=202210
-    year = datetime.now().year
-    termCode = f'{year}{term}'
     response = requests.post('https://registrar-apps.ucdavis.edu/courses/search/course_search_results.cfm',
                              data={
                                  'termCode': termCode,
@@ -131,7 +132,8 @@ def getClassInfo(course):
             'units': row[10],
             'discussion': '',
             'discussion_location': '',
-            'coordinates': coordinates
+            'coordinates': coordinates,
+            'termcode': termCode
         }
 
         # check if crn is in the database
@@ -150,13 +152,13 @@ def getClassInfo(course):
             else:
                 # update the record to row
                 cur.execute(
-                    'UPDATE courses SET crn = ?, time = ?, course = ?, location = ?, section = ?,seats = ?, name = ?, ge = ?, professor = ?, units = ?, discussion = ?,discussion_location=?,coordinates=? WHERE crn = ?',
-                    (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], rows[0]['time'], rows[0]['location'], row['coordinates'], row['crn']))
+                    'UPDATE courses SET crn = ?, time = ?, course = ?, location = ?, section = ?,seats = ?, name = ?, ge = ?, professor = ?, units = ?, discussion = ?,discussion_location=?,coordinates=?,termcode=? WHERE crn = ?',
+                    (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], rows[0]['time'], rows[0]['location'], row['coordinates'], row['termcode'], row['crn']))
         else:
             sections.append(row)
             # add course to database
             cur.execute(
-                'INSERT INTO courses VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)', (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], row['discussion'], row['discussion_location'], row['coordinates']))
+                'INSERT INTO courses VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)', (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], row['discussion'], row['discussion_location'], row['termcode'], row['coordinates']))
     get_db().commit()
     return sections
 
@@ -169,6 +171,16 @@ def getCourse():
     course = request.get_json()['course']
     section = request.get_json()['section']
     user_id = request.get_json()['user_id']
+    username = request.get_json()['username']
+    # check if user is in the database
+    cur = get_db().cursor()
+    cur.execute(
+        'SELECT * FROM students WHERE user_id = ?', (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        cur.execute("INSERT INTO students VALUES (?, ?, ?)",
+                    (user_id, username, json.dumps([])))
+        get_db().commit()
     sections = getClassInfo(course)
     print(sections)
     courses = []
@@ -196,7 +208,8 @@ def getCourse():
                     'discussion': row['discussion'],
                     'discussion_location': row['discussion_location'],
                     'coordinates': row['coordinates'],
-                    'collisions': collisions
+                    'collisions': collisions,
+                    'termcode': row['termcode']
                 })
     return Response(json.dumps(courses),  mimetype='application/json')
 
@@ -303,6 +316,7 @@ def viewCourse():
             'discussion': course['discussion'],
             'discussion_location': course['discussion_location'],
             'coordinates': course['coordinates'],
+            'termcode': course['termcode']
         })
     return Response(json.dumps(c_list),  mimetype='application/json')
 
