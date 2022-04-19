@@ -168,6 +168,7 @@ def getCourse():
     # get course from body
     course = request.get_json()['course']
     section = request.get_json()['section']
+    user_id = request.get_json()['user_id']
     sections = getClassInfo(course)
     print(sections)
     courses = []
@@ -180,6 +181,8 @@ def getCourse():
         else:
             # crn, time, name, location, section, title, ge, instructor, units, discussion
             if section is None or section == '' or section == row['section']:
+                collisions = checkCollision(user_id, row['crn'])
+                print('collisions', collisions)
                 courses.append({
                     'crn': row['crn'],
                     'time': row['time'],
@@ -193,6 +196,7 @@ def getCourse():
                     'discussion': row['discussion'],
                     'discussion_location': row['discussion_location'],
                     'coordinates': row['coordinates'],
+                    'collisions': collisions
                 })
     return Response(json.dumps(courses),  mimetype='application/json')
 
@@ -303,8 +307,10 @@ def viewCourse():
     return Response(json.dumps(c_list),  mimetype='application/json')
 
 
-def getLectureTimes(time):
+def parseTimes(time):
     # Convert 10:00 - 10:50 AM, MWF to datetime objects
+    if time == '' or time == 'TBA':
+        return ['', '', '']
     t = time.split(',')[0]
     start, end = t.split('-')
     start = start.strip()+' '+end.strip().split(' ')[1]
@@ -333,7 +339,7 @@ def getCalendar():
     for c in courses:
         cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
         course = cur.fetchone()
-        times = getLectureTimes(course['time'])
+        times = parseTimes(course['time'])
         day = times[2][0]
         # Change first monday to first day (Can be MTWRF)
         if day == 'M':
@@ -411,7 +417,7 @@ def getEvents():
         backColor = colors[courses.index(c)]
         cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
         course = cur.fetchone()
-        times = getLectureTimes(course['time'])
+        times = parseTimes(course['time'])
         days = times[2]
         # repeat event for each day in days
         for day in days:
@@ -445,6 +451,59 @@ def getEvents():
                 ' - '+course['name']+' Lecture'
             })
     return Response(json.dumps(events),  mimetype='application/json')
+
+
+def checkCollision(user_id, crn):
+    cur = get_db().cursor()
+    cur.execute("SELECT * FROM courses WHERE crn=?", (crn,))
+    course = cur.fetchone()
+    print(course['time'])
+    s_times = parseTimes(course['time'])
+    sd_times = parseTimes(course['discussion'])
+    # returns time in the form of ['10:00 AM', '10:50 AM', 'MWF']
+    collisions = []
+    # check for collisions with lecture times for the student
+    cur.execute("SELECT * FROM students WHERE user_id=?", (user_id,))
+    student = cur.fetchone()
+    if student is None:
+        return Response(json.dumps({'error': 'No courses found'}),  mimetype='application/json')
+    courses = json.loads(student['courses'])
+    times = []
+    for c in courses:
+        cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
+        course = cur.fetchone()
+        c_times = parseTimes(course['time'])
+        d_times = parseTimes(course['discussion'])
+        times.append(c_times)
+        times.append(d_times)
+    # times are in the forn of ['10:00 AM', '10:50 AM', 'MWF']
+    for t in times:
+        # check for collisions with lecture times
+        for i in range(len(s_times[2])):
+            for j in range(len(t[2])):
+                if s_times[2][i] == t[2][j]:
+                    # check if the times overlap
+                    if (datetime.strptime(s_times[0], '%I:%M %p') <= datetime.strptime(t[1], '%I:%M %p') and
+                            datetime.strptime(s_times[1], '%I:%M %p') >= datetime.strptime(t[0], '%I:%M %p')):
+                        collisions.append(c)
+        for i in range(len(sd_times[2])):
+            for j in range(len(t[2])):
+                if sd_times[2][i] == t[2][j]:
+                    # check if the times overlap
+                    if (datetime.strptime(sd_times[0], '%I:%M %p') <= datetime.strptime(t[1], '%I:%M %p') and
+                            datetime.strptime(sd_times[1], '%I:%M %p') >= datetime.strptime(t[0], '%I:%M %p')):
+                        collisions.append(c)
+    return collisions
+
+
+@app.route("/api/collisions", methods=['GET', 'POST'])
+def getCollisions():
+    # takes a crn and checks for collisions with lecture times and discussion times
+    crn = request.get_json()['crn']
+    user_id = request.get_json()['user_id']
+    print(crn)
+    collisions = checkCollision(user_id, crn)
+    return Response(json.dumps(collisions),  mimetype='application/json')
 
 
 @app.route("/api/recommend", methods=['GET', 'POST'])

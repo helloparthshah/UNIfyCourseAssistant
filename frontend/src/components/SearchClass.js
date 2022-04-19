@@ -6,6 +6,11 @@ import "../styles/SearchClass.css";
 function SearchClass(props) {
   const [courses, setData] = useState([]);
   const [courseName, setCourseName] = useState("");
+  const [user_id, setUser_id] = useState("");
+
+  useEffect(() => {
+    setUser_id(props.user_id);
+  }, [props.user_id]);
 
   let onChangeCourseName = (e) => {
     setCourseName(e.target.value);
@@ -16,10 +21,11 @@ function SearchClass(props) {
       .post("/api/course", {
         course: courseName,
         section: "",
+        user_id: user_id,
       })
       .then((res) => {
-        console.log(res.data);
-        if (!res.data.err) setData(res.data);
+        setData(res.data);
+        console.log(res.data.collisions);
       })
       .catch((err) => {
         console.log(err);
@@ -65,8 +71,17 @@ function SearchClass(props) {
         <tbody>
           {courses.length > 0 ? (
             courses.map((course) => {
+              // if collions is not empty, then color the row red
+              // else color the row green
               return (
-                <tr>
+                <tr
+                  key={course.crn}
+                  className={
+                    course.collisions && course.collisions.length > 0
+                      ? "collision"
+                      : "no-collision"
+                  }
+                >
                   <td>{course.crn}</td>
                   <td>{course.title}</td>
                   <td>{course.section}</td>
