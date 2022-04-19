@@ -507,6 +507,10 @@ def getRecomendations():
 
 @app.route("/api/create_test_users", methods=['GET', 'POST'])
 def createTestUsers():
+    # # remove all courses
+    # cur = get_db().cursor()
+    # cur.execute("DELETE FROM courses")
+    # get_db().commit()
     # remove all users with the username Test User
     cur = get_db().cursor()
     cur.execute("DELETE FROM students WHERE name='Test User'")
@@ -527,6 +531,7 @@ def createTestUsers():
 
 
 def getCoordinates(query):
+    query = query.split(' ')[0] + 'HALL'
     try:
         url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
         params = {
