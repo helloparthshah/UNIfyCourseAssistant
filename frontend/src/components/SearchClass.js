@@ -7,10 +7,12 @@ function SearchClass(props) {
   const [courses, setData] = useState([]);
   const [courseName, setCourseName] = useState("");
   const [user_id, setUser_id] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     setUser_id(props.user_id);
-  }, [props.user_id]);
+    setUsername(props.username);
+  }, [props.user_id, props.username]);
 
   let onChangeCourseName = (e) => {
     setCourseName(e.target.value);
@@ -22,6 +24,7 @@ function SearchClass(props) {
         course: courseName,
         section: "",
         user_id: user_id,
+        username: username,
       })
       .then((res) => {
         setData(res.data);

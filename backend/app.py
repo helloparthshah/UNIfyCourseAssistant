@@ -43,30 +43,6 @@ def get_db():
     return db
 
 
-''' def init_sqlite():
-    con = None
-    try:
-        con = sqlite3.connect(r'./courses.db')
-        cur = con.cursor()
-        # create the courses table if it doesn't exist
-        # crn, time, name, location, section, title, ge, instructor, units, discussion
-        cur.execute(
-            'CREATE TABLE IF NOT EXISTS courses (crn TEXT, time TEXT, name TEXT, location TEXT, section TEXT, title TEXT, ge TEXT, instructor TEXT, units TEXT, discussion TEXT)')
-        # create the students table if it doesn't exist
-        cur.execute(
-            'CREATE TABLE IF NOT EXISTS students (user_id TEXT, courses TEXT)')
-        # create the reminders table if it doesn't exist
-        cur.execute(
-            'CREATE TABLE IF NOT EXISTS reminders (user_id TEXT, course TEXT, time TEXT)')
-        con.commit()
-        return con
-    except Error as e:
-        print(e)
-    return con
-
-
-conn = init_sqlite() '''
-
 # term = '01' if datetime.now().month <= 3 else '03' if datetime.now().month <= 6 else '10'
 term = '03'
 # Spring 2022=202203 Winter 2022=202201 Fall 2022=202210
@@ -158,7 +134,7 @@ def getClassInfo(course):
             sections.append(row)
             # add course to database
             cur.execute(
-                'INSERT INTO courses VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)', (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], row['discussion'], row['discussion_location'], row['termcode'], row['coordinates']))
+                'INSERT INTO courses VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)', (row['crn'], row['time'], row['course'].upper().replace(' ', ''), row['location'], row['section'], row['seats'], row['name'], row['ge'], row['professor'], row['units'], row['discussion'], row['discussion_location'], row['coordinates'], row['termcode']))
     get_db().commit()
     return sections
 
