@@ -1,4 +1,4 @@
-#UNify Course Assistant
+# UNify Course Assistant
 ## Inspiration
 What is the single biggest issue that we face as undergraduates living off-campus? Resoundingly, in our group, we answered, "finding classes coherently and meeting new people in classes". We feel that after the pandemic, we had lost touch with the campus and we had forgotten how campus life works. A student needs to have classes that are nearby, not only in timings but also on foot. Couple that with the urge to take classes with friends or with people we know. Sounds like a lot of work and a lot of stress, doesn't it? This is exactly what we solve.
 
