@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/UNIfyCourseAssistant/static/css/main.6cc4806c.css",
-    "main.js": "/UNIfyCourseAssistant/static/js/main.14bbd1f6.js",
+    "main.js": "/UNIfyCourseAssistant/static/js/main.d53a6f63.js",
     "static/js/787.cda612ba.chunk.js": "/UNIfyCourseAssistant/static/js/787.cda612ba.chunk.js",
     "static/media/logo.svg": "/UNIfyCourseAssistant/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/UNIfyCourseAssistant/index.html",
     "main.6cc4806c.css.map": "/UNIfyCourseAssistant/static/css/main.6cc4806c.css.map",
-    "main.14bbd1f6.js.map": "/UNIfyCourseAssistant/static/js/main.14bbd1f6.js.map",
+    "main.d53a6f63.js.map": "/UNIfyCourseAssistant/static/js/main.d53a6f63.js.map",
     "787.cda612ba.chunk.js.map": "/UNIfyCourseAssistant/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6cc4806c.css",
-    "static/js/main.14bbd1f6.js"
+    "static/js/main.d53a6f63.js"
   ]
 }
