@@ -44,7 +44,7 @@ def get_db():
 
 
 # term = '01' if datetime.now().month <= 3 else '03' if datetime.now().month <= 6 else '10'
-term = '03'
+term = '01'
 # Spring 2022=202203 Winter 2022=202201 Fall 2022=202210
 year = datetime.now().year
 termCode = f'{year}{term}'
@@ -308,6 +308,9 @@ def parseTimes(time):
     return [start, end, time.split(',')[1].strip()]
 
 
+first_monday = datetime(year=2023, month=1, day=9)
+
+
 @app.route("/api/calendar", methods=['GET', 'POST'])
 def getCalendar():
     user_id = request.get_json()['user_id']
@@ -319,12 +322,12 @@ def getCalendar():
         return Response(json.dumps({'error': 'No courses found'}),  mimetype='application/json')
     courses = json.loads(student['courses'])
     today = datetime.today()
-    if term == '01':
-        first_monday = datetime(year=today.year, day=1, month=3)
+    """ if term == '01':
+        first_monday = datetime(year=today.year, month=1, day=3)
     elif term == '03':
         first_monday = datetime(year=today.year, month=3, day=28)
     else:
-        first_monday = datetime(year=today.year, month=9, day=21)
+        first_monday = datetime(year=today.year, month=9, day=21) """
 
     for c in courses:
         cur.execute("SELECT * FROM courses WHERE crn=?", (c,))
@@ -623,6 +626,7 @@ school = ratemyprofessor.get_school_by_name("University of California Davis")
 @app.route("/api/professor", methods=['GET', 'POST'])
 def getRMP():
     professor = request.get_json()['professor']
+    print(school.id)
     prof = ratemyprofessor.get_professor_by_school_and_name(school, professor)
     if prof is not None:
         prof = {
