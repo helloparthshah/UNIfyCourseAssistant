@@ -13,12 +13,12 @@ import Header from "./components/Header";
 function App() {
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/view" element={<ViewClasses />} />
-          <Route path="/rate" element={<Rating />} />
+          <Route exact path="/" element={<Home />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/view" element={<ViewClasses />} />
+          <Route exact path="/rate" element={<Rating />} />
         </Routes>
       </BrowserRouter>
     </>
