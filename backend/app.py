@@ -7,7 +7,7 @@ from icalendar import Event, Calendar
 from flask import Flask
 import requests
 from flask import Flask, request, jsonify
-
+from flask_cors import CORS
 from datetime import datetime, timedelta
 from flask import Response
 import ratemyprofessor
@@ -24,6 +24,7 @@ API_KEY = os.getenv('API_KEY')
 DATABASE = './database.db'
 
 app = Flask(__name__)
+CORS(app)
 
 
 def get_db():

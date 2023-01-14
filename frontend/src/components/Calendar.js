@@ -29,7 +29,7 @@ function Calendar(props) {
 
   useEffect(() => {
     axios
-      .post("/api/events", {
+      .post("https://unify.onrender.com/api/events", {
         user_id: user_id,
       })
       .then((res) => {
@@ -39,7 +39,7 @@ function Calendar(props) {
 
   useEffect(() => {
     axios
-      .post("/api/calendar", {
+      .post("https://unify.onrender.com/api/calendar", {
         user_id: props.user_id,
       })
       .then((res) => {

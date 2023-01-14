@@ -18,7 +18,7 @@ function Rating(props) {
     console.log(prof);
     if (prof)
       axios
-        .post("/api/professor", {
+        .post("https://unify.onrender.com/api/professor", {
           professor: prof,
         })
         .then((res) => {

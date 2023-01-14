@@ -69,7 +69,7 @@ function SearchClass(props) {
             </tr>
           </thead>
         ) : (
-          <> </>
+          <></>
         )}
         <tbody>
           {courses.length > 0 ? (

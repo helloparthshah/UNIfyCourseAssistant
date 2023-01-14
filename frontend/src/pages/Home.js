@@ -32,9 +32,10 @@ function Home() {
     // check if cookie exists
     if (user_id && user_id !== "") {
       console.log(user_id);
-      if (window.location.pathname !== "/") {
-        window.location.href = "/";
-      }
+      console.log(window.location.pathname);
+      /* if (window.location.pathname !== "/UNIfyCourseAssistant" || window.location.pathname !== "/UNIfyCourseAssistant/") {
+        window.location.href = "/UNIfyCourseAssistant/";
+      } */
     } else {
       // extract code from url
       const code = window.location.href.split("?code=")[1];
@@ -42,11 +43,11 @@ function Home() {
       if (code) {
         // use code to get /oauth2/@me from discord
         const params = new URLSearchParams();
-        params.append("client_id", "964993808888643614");
-        params.append("client_secret", "DTD56L93rPr7cH0_i7itdEDluDLNI8I0");
+        params.append("client_id", "953176747115941938");
+        params.append("client_secret", "8SHQ3wJrEMeUv_spQwRNuv02RBO5qIyQ");
         params.append("grant_type", "authorization_code");
         params.append("code", code);
-        params.append("redirect_uri", "http://localhost:3000");
+        params.append("redirect_uri", "https://helloparthshah.xyz/UNIfyCourseAssistant/");
         params.append("scope", "identify");
         const requestOptions = {
           method: "POST",
@@ -78,7 +79,7 @@ function Home() {
                     maxAge: 604800,
                   });
                 }
-                window.location.href = "/";
+                window.location.href = "/UNIfyCourseAssistant/";
               });
           });
       }

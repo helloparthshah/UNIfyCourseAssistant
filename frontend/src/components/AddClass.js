@@ -17,7 +17,7 @@ function AddClass(props) {
 
   let getClass = () => {
     axios
-      .post("/api/add", {
+      .post("https://unify.onrender.com/api/add", {
         course: courseName,
         section: section,
         // user_id: localStorage.getItem("user_id"),
@@ -34,7 +34,7 @@ function AddClass(props) {
 
   let removeClass = () => {
     axios
-      .post("/api/remove", {
+      .post("https://unify.onrender.com/api/remove", {
         course: courseName,
         section: section,
         user_id: props.user_id,

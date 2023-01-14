@@ -7,14 +7,20 @@ function Recommend(props) {
 
   useEffect(() => {
     axios
-      .post("/api/recommend", {
+      .post("https://unify.onrender.com/api/recommend", {
         user_id: props.user_id,
+      }, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        },
       })
       .then((res) => {
         console.log(res.data);
         if (!res.data.err) setRecommendations(res.data);
       })
       .catch((err) => {
+        console.log("recommendations!!!!!!!!!!  ");
         console.log(err);
       });
   }, [props.user_id]);

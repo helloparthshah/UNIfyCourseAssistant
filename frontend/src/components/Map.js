@@ -245,7 +245,7 @@ function Map(props) {
     if (user_id && user_id !== "") {
       console.log(user_id);
       axios
-        .post("/api/view", {
+        .post("https://unify.onrender.com/api/view", {
           user_id: user_id,
         })
         .then((res) => {
