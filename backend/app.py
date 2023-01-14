@@ -120,6 +120,7 @@ def getClassInfo(course):
         if len(rows) > 0:
             time1 = rows[0]['time'].split(' ')[-1]
             time2 = row['time'].split(' ')[-1]
+            print(time1, time2)
             if len(time1) >= len(time2):
                 # set the discussion to time2 in the database
                 cur.execute(
