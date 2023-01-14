@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import random
-import uuid
 from bs4 import BeautifulSoup
 import json
 from icalendar import Event, Calendar
@@ -10,7 +9,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
 from flask import Response
-import ratemyprofessor
 
 import sqlite3
 from flask import g
@@ -621,26 +619,26 @@ def getLocation():
     return Response(json.dumps(location),  mimetype='application/json') '''
 
 
-school = ratemyprofessor.get_school_by_name("University of California Davis")
-
-
 @app.route("/api/professor", methods=['GET', 'POST'])
 def getRMP():
     professor = request.get_json()['professor']
-    print(school.id)
-    prof = ratemyprofessor.get_professor_by_school_and_name(school, professor)
-    if prof is not None:
-        prof = {
-            'name': prof.name,
-            'department': prof.department,
-            'difficulty': prof.difficulty,
-            'rating': prof.rating,
-            'would_take_again': prof.would_take_again,
-            'num_ratings': prof.num_ratings,
-        }
-        return Response(json.dumps(prof),  mimetype='application/json')
-    else:
+    data = requests.get('https://www.ratemyprofessors.com/search/teachers?query='+professor.replace(' ', '%20') +
+                        '&sid=1073')
+    # find the first instance of 'legacyId'
+    index = data.text.find('legacyId')
+    if index == -1:
         return Response(json.dumps({'error': 'Professor not found'}),  mimetype='application/json')
+    # print the rest of the string
+    print(data.text[index:])
+    prof = {
+        'name': data.text[index:].split('firstName":"')[1].split('","')[0] + ' ' + data.text[index:].split('lastName":"')[1].split('","')[0],
+        'department': data.text[index:].split('department":"')[1].split('","')[0],
+        'difficulty': data.text[index:].split('avgDifficulty":')[1].split(',')[0],
+        'rating': data.text[index:].split('avgRating":')[1].split(',')[0],
+        'would_take_again': data.text[index:].split('wouldTakeAgainPercent":')[1].split(',')[0],
+        'num_ratings': data.text[index:].split('numRatings":')[1].split(',')[0],
+    }
+    return Response(json.dumps(prof),  mimetype='application/json')
 
 
 @app.teardown_appcontext
